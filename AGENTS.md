@@ -2,6 +2,10 @@
 
 Guidance for AI coding agents working in this repository.
 
+作業の進め方、ファイルと実行、文章、検証と報告などの共通規約は `~/.codex/AGENTS.md`(Codex / Claude Code 共通)にあります。この文書には、この repo のドメイン知識に基づく規則だけを置きます。
+
+- 引き継ぎ note(`~/.claude/CLAUDE.md` の「引き継ぎ note」)は `notes/handoff/<担当>/` に置きます。この repo の担当は agent-desktop です。
+
 agent-desktop is a tool that AI agents invoke, not an agent. It is a Rust CLI and C library that reads native
 accessibility trees and returns structured JSON with ref-based element ids. The observe-act loop lives in the
 calling agent. It never embeds an LLM and has no GUI or interactive prompt. It does not automate web pages (use

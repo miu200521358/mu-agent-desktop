@@ -88,3 +88,4 @@ probes/windows/22-capture-clipboard/bin/
 # probes/windows/NN-*/captures/ commit their twins beside the capture.
 probes/*/captures/**/*.normalized
 npm/bin/.launcher-notice-*
+.claude
