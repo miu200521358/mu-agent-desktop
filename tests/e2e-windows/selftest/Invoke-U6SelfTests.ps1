@@ -13,14 +13,14 @@
     the skip ledger, the canned-CLI stub) - U7 depends on U6. This script
     proves the primitives U6 owns work, each assertion checked by
     independent re-observation (a raw handle, a raw process re-query, or the
-    real agent-desktop.exe envelope), never by a helper's own claimed
+    real mu-agent-desktop.exe envelope), never by a helper's own claimed
     success. Every scenario corresponds to one of U6's plan-listed test
     scenarios; where a scenario names an invert-verification, the case
     performs it inline and restores the guarded behavior before continuing,
     so a single run proves both that the guard exists and that it is what
     actually fires.
 
-    Requires target\release\agent-desktop.exe to already be built. Needs a
+    Requires target\release\mu-agent-desktop.exe to already be built. Needs a
     real desktop and acquires the real desktop lease - not hosted-runner-
     runnable, unlike U7's stub-driven tier.
 #>
@@ -37,7 +37,7 @@ $script:E2EWindowsDir = Split-Path -Parent $script:SelftestDir
 $script:TestsDir = Split-Path -Parent $script:E2EWindowsDir
 $script:RepoRoot = Split-Path -Parent $script:TestsDir
 if (-not $AgentDesktopBinary) {
-    $AgentDesktopBinary = Join-Path $script:RepoRoot 'target\release\agent-desktop.exe'
+    $AgentDesktopBinary = Join-Path $script:RepoRoot 'target\release\mu-agent-desktop.exe'
 }
 Import-Module (Join-Path $script:E2EWindowsDir 'Native.psm1') -Force
 Import-Module (Join-Path $script:E2EWindowsDir 'NativeDesktop.psm1') -Force
@@ -47,7 +47,7 @@ Import-Module (Join-Path $script:E2EWindowsDir 'Harness.psm1') -Force
 Import-Module (Join-Path $script:SelftestDir 'SelfTestSupport.psm1') -Force
 
 if (-not (Test-Path -LiteralPath $AgentDesktopBinary -PathType Leaf)) {
-    throw "Invoke-U6SelfTests: agent-desktop.exe not found at $AgentDesktopBinary - run 'cargo build --release -p agent-desktop' first"
+    throw "Invoke-U6SelfTests: mu-agent-desktop.exe not found at $AgentDesktopBinary - run 'cargo build --release -p agent-desktop' first"
 }
 
 Reset-SelfTestResults

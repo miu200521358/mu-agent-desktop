@@ -60,7 +60,7 @@ fn socket_for_name(root: &Path, name: String) -> PathBuf {
 }
 
 fn private_fallback_root() -> PathBuf {
-    PathBuf::from("/tmp").join(format!("agent-desktop-{}", unsafe { libc::geteuid() }))
+    PathBuf::from("/tmp").join(format!("mu-agent-desktop-{}", unsafe { libc::geteuid() }))
 }
 
 fn ensure_socket_parent(path: &Path) -> Result<(), AdapterError> {

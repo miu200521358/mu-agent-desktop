@@ -127,7 +127,7 @@ jobs:
         shell: bash
         run: |
           LIMIT=$((15 * 1024 * 1024))
-          for FILE in agent-desktop agent-desktop-linux-clipboard-owner; do
+          for FILE in mu-agent-desktop agent-desktop-linux-clipboard-owner; do
             PATH_TO="target/${{ matrix.target }}/release/${FILE}"
             scripts/check-elf-glibc-floor.sh "${PATH_TO}" "${GLIBC_FLOOR}"
             SIZE=$(stat -c%s "${PATH_TO}")
@@ -140,17 +140,17 @@ jobs:
 
       - name: Smoke-run the built binary (macOS)
         if: runner.os == 'macOS'
-        run: target/${{ matrix.target }}/release/agent-desktop version
+        run: target/${{ matrix.target }}/release/mu-agent-desktop version
 
       - name: Smoke-run the built binary (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: target/${{ matrix.target }}/release/agent-desktop version
+        run: target/${{ matrix.target }}/release/mu-agent-desktop version
 
       - name: Smoke-run the built binary (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: '& "target/${{ matrix.target }}/release/agent-desktop.exe" version'
+        run: '& "target/${{ matrix.target }}/release/mu-agent-desktop.exe" version'
 
       - name: Create tarball (macOS)
         if: runner.os == 'macOS'
@@ -158,8 +158,11 @@ jobs:
           VERSION: ${{ inputs.version || format('0.0.0-pr{0}', github.event.pull_request.number) }}
         run: |
           TARBALL="agent-desktop-v${VERSION}-${{ matrix.target }}.tar.gz"
-          tar -czf "${TARBALL}" -C "target/${{ matrix.target }}/release" \
-            agent-desktop agent-desktop-macos-helper
+          ARCHIVE_DIR="$RUNNER_TEMP/agent-desktop-release"
+          mkdir -p "$ARCHIVE_DIR"
+          cp "target/${{ matrix.target }}/release/mu-agent-desktop" "$ARCHIVE_DIR/agent-desktop"
+          cp "target/${{ matrix.target }}/release/agent-desktop-macos-helper" "$ARCHIVE_DIR/agent-desktop-macos-helper"
+          tar -czf "${TARBALL}" -C "$ARCHIVE_DIR" agent-desktop agent-desktop-macos-helper
           tar -tzf "${TARBALL}" | sort > listing.txt
           printf 'agent-desktop\nagent-desktop-macos-helper\n' | sort > expected.txt
           diff -u expected.txt listing.txt
@@ -172,8 +175,11 @@ jobs:
           VERSION: ${{ inputs.version || format('0.0.0-pr{0}', github.event.pull_request.number) }}
         run: |
           TARBALL="agent-desktop-v${VERSION}-${{ matrix.target }}.tar.gz"
-          tar -czf "${TARBALL}" -C "target/${{ matrix.target }}/release" \
-            agent-desktop agent-desktop-linux-clipboard-owner
+          ARCHIVE_DIR="$RUNNER_TEMP/agent-desktop-release"
+          mkdir -p "$ARCHIVE_DIR"
+          cp "target/${{ matrix.target }}/release/mu-agent-desktop" "$ARCHIVE_DIR/agent-desktop"
+          cp "target/${{ matrix.target }}/release/agent-desktop-linux-clipboard-owner" "$ARCHIVE_DIR/agent-desktop-linux-clipboard-owner"
+          tar -czf "${TARBALL}" -C "$ARCHIVE_DIR" agent-desktop agent-desktop-linux-clipboard-owner
           scripts/check-linux-archive-contents.sh cli "${TARBALL}"
           sha256sum "${TARBALL}" > "${TARBALL}.sha256"
 
@@ -184,7 +190,11 @@ jobs:
           VERSION: ${{ inputs.version || format('0.0.0-pr{0}', github.event.pull_request.number) }}
         run: |
           $tarball = "agent-desktop-v${env:VERSION}-${{ matrix.target }}.tar.gz"
-          & tar -czf $tarball -C "target/${{ matrix.target }}/release" agent-desktop.exe
+          $binary = "target/${{ matrix.target }}/release/mu-agent-desktop.exe"
+          $archiveDir = Join-Path $env:RUNNER_TEMP 'agent-desktop-release'
+          New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null
+          Copy-Item -LiteralPath $binary -Destination (Join-Path $archiveDir 'agent-desktop.exe') -Force
+          & tar -czf $tarball -C $archiveDir agent-desktop.exe
           $listing = @(@(& tar -tzf $tarball) | Where-Object { $_ -ne '' })
           if (@($listing).Count -ne 1 -or $listing[0] -ne 'agent-desktop.exe') {
             Write-Host "FAIL: archive entries are '$($listing -join ", ")', expected exactly agent-desktop.exe"

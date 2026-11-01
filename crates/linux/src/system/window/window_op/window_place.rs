@@ -5,7 +5,7 @@ use serde_json::{Value, json};
 use crate::system::app::runtime_store::{instance_stem, runtime_subdir, write_private_atomically};
 use crate::tree::Extents;
 
-const PLACE_DIR: &str = "agent-desktop-window-places";
+const PLACE_DIR: &str = "mu-agent-desktop-window-places";
 const STALE_PENDING: std::time::Duration = std::time::Duration::from_secs(60);
 
 /// The client rectangles windows had before they were maximized, kept in a

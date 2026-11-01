@@ -44,14 +44,14 @@ fn a_hide_or_show_with_no_renderer_running_starts_nothing() {
 /// overlay that was never started.
 #[test]
 fn a_control_that_may_spawn_refuses_from_a_test_binary_rather_than_claiming_success() {
-    let error = update(&travel()).expect_err("a test binary is not the agent-desktop image");
+    let error = update(&travel()).expect_err("a test binary is not the mu-agent-desktop image");
 
     assert_eq!(error.code, ErrorCode::PlatformNotSupported);
     assert!(
         error
             .platform_detail
             .as_deref()
-            .is_some_and(|detail| detail.contains("agent-desktop")),
+            .is_some_and(|detail| detail.contains("mu-agent-desktop")),
         "the refusal names the image it expected, so a reader is not left guessing"
     );
 }
@@ -62,7 +62,7 @@ fn an_enable_refuses_from_a_test_binary_for_the_same_reason() {
         session(),
         CursorOverlayStyle::default(),
     ))
-    .expect_err("a test binary is not the agent-desktop image");
+    .expect_err("a test binary is not the mu-agent-desktop image");
 
     assert_eq!(error.code, ErrorCode::PlatformNotSupported);
 }

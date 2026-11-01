@@ -51,7 +51,7 @@ cargo build "${HOST_PKGS[@]}"
 cargo build --release -p agent-desktop
 
 # Run the binary
-./target/release/agent-desktop snapshot --app Finder -i
+./target/release/mu-agent-desktop snapshot --app Finder -i
 ```
 
 `HOST_PKGS` is an array so that it expands to separate arguments in both bash and zsh, the macOS default shell.
@@ -83,7 +83,7 @@ cargo tree -p agent-desktop-core
 AGENT_DESKTOP_E2E_EXCLUSIVE=1 bash tests/e2e/run.sh
 ```
 
-CI and the pre-commit hook run `cargo test` through `scripts/cargo-test-isolated-home.sh test ...`, which gives cargo a throwaway `HOME` so tests never touch `~/.agent-desktop`. Use it the same way locally when you want that isolation.
+CI and the pre-commit hook run `cargo test` through `scripts/cargo-test-isolated-home.sh test ...`, which gives cargo a throwaway `HOME` so tests never touch `~/.mu-agent-desktop`. Use it the same way locally when you want that isolation.
 
 `tests/e2e/run.sh` builds the release CLI, macOS helper and FFI library itself and refuses to run without `AGENT_DESKTOP_E2E_EXCLUSIVE=1`, because headed cases move the real cursor. `tests/e2e/README.md` covers what it asserts and how to add a scenario.
 

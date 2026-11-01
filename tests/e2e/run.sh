@@ -3,7 +3,7 @@ set -uo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
-if [ -z "${AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" ]; then
+if [ -z "${MU_AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" ]; then
     if [ "$(uname -s)" != "Darwin" ]; then
         echo "macOS is required for the native accessibility E2E suite" >&2
         exit 2
@@ -17,7 +17,7 @@ if [ -z "${AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" ]; then
         -p agent-desktop-macos --bin agent-desktop-macos-helper || exit 2
     CARGO_TARGET_DIR="$repo/target" cargo build --locked --profile release-ffi \
         -p agent-desktop-ffi || exit 2
-    export AGENT_DESKTOP_E2E_RELEASE_BIN="$repo/target/release/agent-desktop"
+    export AGENT_DESKTOP_E2E_RELEASE_BIN="$repo/target/release/mu-agent-desktop"
     export AGENT_DESKTOP_E2E_RELEASE_FFI="$repo/target/release-ffi/libagent_desktop_ffi.dylib"
     export AGENT_DESKTOP_E2E_RELEASE_FFI_HELPER="$repo/target/release/agent-desktop-macos-helper"
     exec python3 "$here/interaction_lock.py" run "$0" "$@"

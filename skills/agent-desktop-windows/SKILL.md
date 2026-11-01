@@ -30,6 +30,7 @@ observation, actions and capture there fail or return nothing.
 | Group | Commands | Status on Windows |
 |-------|----------|-------------------|
 | Observation | `snapshot`, `find`, `get`, `is`, `screenshot` | Works. Surfaces are `window`, `focused`, a Chromium modal as `sheet`, and an open application menu as `menu` |
+| Window diagnosis | `window-diagnostic` | Works. Read-only. Requires `--pid`; optional `--app` and `--window-id` narrow with AND semantics. Reports cloak and public virtual-desktop API results without refs |
 | Surfaces | `list-surfaces` | Works. Lists `window`, `focused` and `sheet` per process, plus `menu` with `item_count` while a menu is open |
 | Shell surfaces | `open-system-surface` | Works for `start-menu`, `taskbar`, `system-tray`, `system-tray-overflow` and `action-center`, and returns the window `snapshot --surface <kind>` reads. `quick-settings` returns `PLATFORM_NOT_SUPPORTED` naming `action-center` |
 | Ref interaction | `click`, `right-click`, `type`, `set-value`, `clear`, `select`, `toggle`, `check`, `uncheck`, `expand`, `collapse`, `scroll`, `scroll-to` | Works, semantic in headless and `--headed` mode. `right-click` and `type` need `--headed` and return `POLICY_DENIED` headless |
@@ -92,6 +93,41 @@ observation, actions and capture there fail or return nothing.
 
 - Ref actions are semantic UI Automation calls in headless and `--headed` mode, except `right-click`, `double-click`, `triple-click`, `type` and `focus`, which are physical or take focus and need `--headed`.
 - The cursor overlay plays its per-action travel only for headless semantic actions. A `--headed` action moves the real cursor instead.
+
+## Reading a cloaked window
+
+Use `window-diagnostic` to inspect every top-level window owned by a process.
+The optional selectors combine, and this command never allocates refs or writes
+refmaps:
+
+```powershell
+mu-agent-desktop window-diagnostic --pid 1234
+mu-agent-desktop window-diagnostic --pid 1234 --app Editor --window-id w-80432
+```
+
+Each record includes the process generation when readable, visible/iconic/tool
+state, bounds, raw DWM cloak flags and their known/unknown status, HRESULTs,
+both public virtual-desktop API results, and whether normal inventory would
+admit the window. A `null` `process_instance` or a cloak HRESULT is unknown;
+neither means an un-cloaked window.
+
+To observe or use one known cloaked window, pass its exact `w-<HWND>` and PID
+for that single command:
+
+```powershell
+mu-agent-desktop --pid 1234 --cloaked-window w-80432 snapshot
+mu-agent-desktop --pid 1234 --cloaked-window w-80432 screenshot --window-id w-80432
+mu-agent-desktop --pid 1234 --cloaked-window w-80432 click '@s8f3k2p9:e1'
+```
+
+The exception applies only to `snapshot`, `screenshot`, `list-surfaces`,
+`click`, `set-value`, `clear`, `toggle`, `select`, `expand`, `collapse`,
+`scroll-to`, `get`, `is` and `wait --element`. Ref actions recheck the same
+HWND, PID and process generation. Visible, nonzero-size, non-tool and known
+cloak state remain required; offscreen/actionability gates still apply. Unknown
+cloak state fails closed. `--headed`, visual-debug capture and physical-input
+commands are refused. The option does not carry into a session or batch and
+does not change the OS desktop or window state.
 
 ## References
 

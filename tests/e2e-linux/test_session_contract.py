@@ -206,7 +206,7 @@ class EnvFileTests(unittest.TestCase):
             state = base / "state"
             state.mkdir()
             values = {"AGENT_DESKTOP_PRIVATE_SESSION": str(base),
-                      "AGENT_DESKTOP_HOME": str(state), "DBUS_SESSION_BUS_ADDRESS": "unix:path=/private/bus",
+                      "MU_AGENT_DESKTOP_HOME": str(state), "DBUS_SESSION_BUS_ADDRESS": "unix:path=/private/bus",
                       "LD_LIBRARY_PATH": "/private/wrapper-libraries"}
             with mock.patch.dict(os.environ, {"PATH": "/private/tools/bin"}):
                 tier = session._build_tier("x11-openbox", values)
@@ -220,7 +220,7 @@ class EnvFileTests(unittest.TestCase):
             state = root / "state"
             state.mkdir()
             tier = session._build_tier("wayland", {"AGENT_DESKTOP_PRIVATE_SESSION": directory,
-                "AGENT_DESKTOP_HOME": str(state), "DBUS_SESSION_BUS_ADDRESS": "unix:path=/private/bus",
+                "MU_AGENT_DESKTOP_HOME": str(state), "DBUS_SESSION_BUS_ADDRESS": "unix:path=/private/bus",
                 "DISPLAY": ":100", "WAYLAND_DISPLAY": "wayland-owned"})
             self.assertIsNone(tier.display)
             self.assertNotIn("DISPLAY", tier.env)
@@ -287,7 +287,7 @@ class StubWrapperTests(unittest.TestCase):
             'export AGENT_DESKTOP_PRIVATE_SESSION=$rt\n'
             'mkdir -p "$rt/ad-home" "$rt/tmp"\n'
             "printf 'XDG_RUNTIME_DIR=%s\\nDISPLAY=%s\\nDBUS_SESSION_BUS_ADDRESS=%s\\n"
-            "AGENT_DESKTOP_PRIVATE_SESSION=%s\\nAGENT_DESKTOP_HOME=%s\\nTMPDIR=%s\\n' \\\n"
+            "AGENT_DESKTOP_PRIVATE_SESSION=%s\\nMU_AGENT_DESKTOP_HOME=%s\\nTMPDIR=%s\\n' \\\n"
             '  "$rt" ":201" "$DBUS_SESSION_BUS_ADDRESS" "$rt" "$rt/ad-home" "$TMPDIR" > "$AD_TIER_ENV_FILE"\n'
             'printf \'%s %s\\n\' "$AD_RUNNER_PID" "$AD_RUNNER_START" > "$rt/harness-owner"\n'
             'trap \'rm -rf -- "$rt"\' EXIT\n'

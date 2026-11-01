@@ -110,6 +110,7 @@ fn the_hosted_frame_detection_rides_the_existing_enumeration_pass() {
     let filter = WindowFilter {
         focused_only: false,
         app: Some(String::from("zz-agent-desktop-no-such-app")),
+        cloaked_window: None,
     };
     let windows = list_windows_live(&filter, deadline(15_000)).expect("the listing succeeds");
     assert!(windows.is_empty(), "the no-match filter lists nothing");

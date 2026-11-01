@@ -158,8 +158,8 @@ jobs:
         run: |
           PACKAGE_ID=$(cargo pkgid -p agent-desktop)
           EXPECTED_VERSION=${PACKAGE_ID##*@}
-          EXPECTED_OUTPUT="agent-desktop $EXPECTED_VERSION"
-          ACTUAL_OUTPUT=$(target/release/agent-desktop --version)
+          EXPECTED_OUTPUT="mu-agent-desktop $EXPECTED_VERSION"
+          ACTUAL_OUTPUT=$(target/release/mu-agent-desktop --version)
           if [ "$ACTUAL_OUTPUT" != "$EXPECTED_OUTPUT" ]; then
             echo "FAIL: expected '$EXPECTED_OUTPUT', got '$ACTUAL_OUTPUT'"
             exit 1
@@ -167,10 +167,10 @@ jobs:
 
       - name: Check shipped binary size
         run: |
-          SIZE=$(stat -f%z target/release/agent-desktop)
+          SIZE=$(stat -f%z target/release/mu-agent-desktop)
           HELPER_SIZE=$(stat -f%z target/release/agent-desktop-macos-helper)
           LIMIT=$((15 * 1024 * 1024))
-          echo "Binary size: $(du -sh target/release/agent-desktop | cut -f1)"
+          echo "Binary size: $(du -sh target/release/mu-agent-desktop | cut -f1)"
           echo "Helper size: $(du -sh target/release/agent-desktop-macos-helper | cut -f1)"
           if [ "$SIZE" -gt "$LIMIT" ] || [ "$HELPER_SIZE" -gt "$LIMIT" ]; then
             echo "FAIL: shipped executable exceeds 15MB limit (binary=${SIZE}, helper=${HELPER_SIZE} bytes)"
@@ -263,9 +263,9 @@ jobs:
 
       - name: Check shipped binary size
         run: |
-          SIZE=$(stat -c%s target/release/agent-desktop)
+          SIZE=$(stat -c%s target/release/mu-agent-desktop)
           LIMIT=$((15 * 1024 * 1024))
-          echo "Binary size: $(du -sh target/release/agent-desktop | cut -f1)"
+          echo "Binary size: $(du -sh target/release/mu-agent-desktop | cut -f1)"
           if [ "$SIZE" -gt "$LIMIT" ]; then
             echo "FAIL: shipped executable exceeds 15MB limit (binary=${SIZE} bytes)"
             exit 1
@@ -297,7 +297,7 @@ jobs:
         run: |
           cat > "$RUNNER_TEMP/status-granted.sh" <<'SCRIPT'
           set -eu
-          JSON=$(target/release/agent-desktop status)
+          JSON=$(target/release/mu-agent-desktop status)
           printf '%s\n' "$JSON"
           printf '%s' "$JSON" | python3 -c '
           import json, sys
@@ -314,7 +314,7 @@ jobs:
           XDG_RUNTIME_DIR=$(mktemp -d)
           export DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent XDG_RUNTIME_DIR
           for command in status permissions; do
-            JSON=$(target/release/agent-desktop "$command")
+            JSON=$(target/release/mu-agent-desktop "$command")
             printf '%s\n' "$JSON"
             printf '%s' "$JSON" | python3 -c '
           import json, sys
@@ -327,7 +327,7 @@ jobs:
           '
           done
           RC=0
-          JSON=$(target/release/agent-desktop click @s8f3k2p9:e1) || RC=$?
+          JSON=$(target/release/mu-agent-desktop click @s8f3k2p9:e1) || RC=$?
           test "$RC" -eq 1
           printf '%s\n' "$JSON"
           printf '%s' "$JSON" | python3 -c '
@@ -515,7 +515,7 @@ jobs:
       - name: Check shipped binary size
         shell: pwsh
         run: |
-          $binary = Get-Item target/release/agent-desktop.exe
+          $binary = Get-Item target/release/mu-agent-desktop.exe
           $limit = 15MB
           Write-Host "Binary size: $($binary.Length) bytes"
           if ($binary.Length -gt $limit) {
@@ -535,7 +535,7 @@ jobs:
             Write-Host "FAIL: USERPROFILE is not under RUNNER_TEMP: $env:USERPROFILE"
             exit 1
           }
-          $leak = Join-Path $env:ORIGINAL_USERPROFILE '.agent-desktop'
+          $leak = Join-Path $env:ORIGINAL_USERPROFILE '.mu-agent-desktop'
           if (Test-Path $leak) {
             Write-Host "FAIL: a test escaped the isolated HOME and wrote $leak"
             exit 1
@@ -614,7 +614,7 @@ jobs:
       - name: Install the packed npm package and run it through the shim
         shell: pwsh
         run: |
-          $env:AGENT_DESKTOP_BINARY_PATH = (Resolve-Path 'target/release/agent-desktop.exe').Path
+          $env:AGENT_DESKTOP_BINARY_PATH = (Resolve-Path 'target/release/mu-agent-desktop.exe').Path
           Push-Location npm
           npm pack
           $tarball = Get-ChildItem -Filter 'agent-desktop-*.tgz' | Select-Object -First 1
@@ -638,7 +638,7 @@ jobs:
             Write-Host "FAIL: USERPROFILE is not under RUNNER_TEMP: $env:USERPROFILE"
             exit 1
           }
-          $leak = Join-Path $env:ORIGINAL_USERPROFILE '.agent-desktop'
+          $leak = Join-Path $env:ORIGINAL_USERPROFILE '.mu-agent-desktop'
           if (Test-Path $leak) {
             Write-Host "FAIL: a test escaped the isolated HOME and wrote $leak"
             exit 1

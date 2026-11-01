@@ -25,8 +25,8 @@ command -v cc >/dev/null 2>&1 || { echo "run-consumer: cc is required" >&2; exit
 command -v python3 >/dev/null 2>&1 || { echo "run-consumer: python3 is required" >&2; exit 2; }
 
 WORK=$(mktemp -d "${AGENT_DESKTOP_PRIVATE_SESSION:-${TMPDIR:-/tmp}}/ad-consumer.XXXXXX")
-export AGENT_DESKTOP_HOME="$WORK/state"
-mkdir -m 700 "$AGENT_DESKTOP_HOME"
+export MU_AGENT_DESKTOP_HOME="$WORK/state"
+mkdir -m 700 "$MU_AGENT_DESKTOP_HOME"
 mkdir -p "$WORK/nopath" "$WORK/bus"
 APP_PID=
 

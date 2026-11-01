@@ -58,7 +58,7 @@ Import-Module (Join-Path $repoRoot 'tests\e2e-windows\DesktopLease.psm1') -Force
 
 $handoffEnvName = 'AGENT_DESKTOP_E2E_DESKTOP_LEASE_HANDLE'
 $runE2EPath = Join-Path $repoRoot 'tests\e2e-windows\Run-E2E.ps1'
-$releaseBinary = Join-Path $repoRoot 'target\release\agent-desktop.exe'
+$releaseBinary = Join-Path $repoRoot 'target\release\mu-agent-desktop.exe'
 $fixtureBuildScript = Join-Path $repoRoot 'tests\fixture-app-windows\build.ps1'
 $u6SelfTestScript = Join-Path $repoRoot 'tests\e2e-windows\selftest\Invoke-U6SelfTests.ps1'
 

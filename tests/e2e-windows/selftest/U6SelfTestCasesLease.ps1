@@ -112,7 +112,7 @@ Invoke-SelfTest 'the handoff variable does not leak into a child spawned after a
 
 <#
     9. With the lease held by Enter-DesktopLease and
-       AGENT_DESKTOP_INTERACTION_LEASE_HANDLE deliberately unset (via
+       MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE deliberately unset (via
        Invoke-Guarded), a guarded spawn running a leased command returns
        TIMEOUT - proving PowerShell's resolver and canonical_lock_path()
        name the same file. Invert-verified by pointing Enter-DesktopLease
@@ -124,7 +124,7 @@ Invoke-SelfTest 'a leased command contends against the harness-held lease at the
     try {
         $result = Invoke-Guarded -FilePath $AgentDesktopBinary -ArgumentList @('mouse-move', '--headed', '--xy', '5,5') -TimeoutSeconds 10
         $envelope = ConvertFrom-AgentJson -Json $result.StdOut
-        Assert-True ($envelope['ok'] -eq $false -and $envelope['error']['code'] -eq 'TIMEOUT') "an agent-desktop.exe command run without lease inheritance must contend against the harness's own lease and report TIMEOUT - saw: $($result.StdOut.Trim())"
+        Assert-True ($envelope['ok'] -eq $false -and $envelope['error']['code'] -eq 'TIMEOUT') "a mu-agent-desktop.exe command run without lease inheritance must contend against the harness's own lease and report TIMEOUT - saw: $($result.StdOut.Trim())"
     } finally {
         Exit-DesktopLease
     }

@@ -10,21 +10,22 @@ use crate::{
 pub(crate) const POLL_INTERVAL: Duration = Duration::from_millis(100);
 const RESOLVE_ATTEMPT: Duration = Duration::from_millis(4_000);
 
-/// Runs one resolve attempt, bounded to 4 s or the remaining deadline.
-///
-/// A full-tree search costs what a full snapshot costs (a complete search of
-/// Task Manager measured 2.6 s), so a shorter slice cuts every attempt off
-/// mid-search and the verdict never settles. The slice stays under the 5 s
-/// default outer budget so a re-attempt still fits.
-pub(crate) fn resolve_within_deadline(
+pub(crate) fn resolve_within_deadline_for_target(
     adapter: &dyn PlatformAdapter,
     entry: &RefEntry,
+    target: Option<crate::CloakedWindowTarget>,
     deadline: Deadline,
 ) -> ResolveAttemptOutcome {
     if deadline.remaining_slice(RESOLVE_ATTEMPT).is_err() {
         return ResolveAttemptOutcome::DeadlinePassed;
     }
-    match adapter.resolve_element_strict(entry, deadline.capped(RESOLVE_ATTEMPT)) {
+    let result = crate::ref_action::window_scope::resolve_element_for_target(
+        adapter,
+        entry,
+        target,
+        deadline.capped(RESOLVE_ATTEMPT),
+    );
+    match result {
         Ok(_) if deadline.is_expired() => ResolveAttemptOutcome::DeadlinePassed,
         Ok(handle) => ResolveAttemptOutcome::Resolved(handle),
         Err(error) => classify_error(error, deadline),

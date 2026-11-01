@@ -15,7 +15,7 @@ Import-Module (Join-Path $PSScriptRoot 'Native.psm1') -Force -Global
 Import-Module (Join-Path $PSScriptRoot 'BoundedProcess.psm1') -Force -Global
 Import-Module (Join-Path $PSScriptRoot 'DesktopLease.psm1') -Force -Global
 
-$script:OwnershipMarkerName = '.agent-desktop-e2e-root'
+$script:OwnershipMarkerName = '.mu-agent-desktop-e2e-root'
 $script:SuiteRoot = $null
 $script:SuiteOwnerPid = $null
 $script:AgentJsonSerializer = $null

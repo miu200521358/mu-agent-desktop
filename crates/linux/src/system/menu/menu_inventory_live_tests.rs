@@ -41,6 +41,7 @@ Gtk.main()
                 &WindowFilter {
                     focused_only: false,
                     app: None,
+                    cloaked_window: None,
                 },
                 Deadline::after(30_000).expect("budget"),
             )

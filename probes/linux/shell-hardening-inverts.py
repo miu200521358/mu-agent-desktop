@@ -63,8 +63,8 @@ original = source.read_bytes()
 text = original.decode()
 assert text.count(old) == 1, f"mutation anchor count: {case}"
 base = Path(os.environ.get("AGENT_DESKTOP_SESSION_BASE")
-            or (Path(os.environ["XDG_RUNTIME_DIR"]) / "agent-desktop-sessions"
-                if os.environ.get("XDG_RUNTIME_DIR") else Path(f"/tmp/agent-desktop-sessions-{os.getuid()}")))
+            or (Path(os.environ["XDG_RUNTIME_DIR"]) / "mu-agent-desktop-sessions"
+                if os.environ.get("XDG_RUNTIME_DIR") else Path(f"/tmp/mu-agent-desktop-sessions-{os.getuid()}")))
 base.mkdir(mode=0o700, parents=True, exist_ok=True)
 logs = base / "linux-3.15-shell-proof"
 logs.mkdir(parents=True, exist_ok=True)

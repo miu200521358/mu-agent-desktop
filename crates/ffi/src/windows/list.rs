@@ -30,6 +30,7 @@ pub unsafe extern "C" fn ad_list_windows_exact(
         let filter = WindowFilter {
             focused_only,
             app: decode_optional_filter!(app_filter, "app_filter"),
+            cloaked_window: None,
         };
         let adapter = crate::adapter::acquire_adapter!(adapter);
         let deadline = crate::operation::operation_deadline!();

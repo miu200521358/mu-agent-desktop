@@ -231,6 +231,7 @@ fn deadline_window_inventory_rejects_expiry_before_native_reads() {
     let filter = WindowFilter {
         app: None,
         focused_only: false,
+        cloaked_window: None,
     };
 
     let error = list_windows_until(&filter, Instant::now()).unwrap_err();

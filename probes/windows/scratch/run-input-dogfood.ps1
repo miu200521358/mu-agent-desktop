@@ -4,7 +4,7 @@
     Sub-phase 2.8 U8 input-synthesis dogfood runner.
 
 .DESCRIPTION
-    Drives target/release/agent-desktop.exe against repo-controlled targets
+    Drives target/release/mu-agent-desktop.exe against repo-controlled targets
     (Notepad, Explorer, WinForms scratch). Verifies by reading JSON envelopes
     AND independent observation - never SendInput return or ok:true alone.
     Assert-Foreground brackets every harness injection; clipboard/cursor/
@@ -29,7 +29,7 @@ Initialize-ProbeRedaction
 
 Add-Type -AssemblyName System.Windows.Forms | Out-Null
 
-if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\agent-desktop.exe' }
+if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\mu-agent-desktop.exe' }
 if (-not (Test-Path -LiteralPath $Binary)) { throw "release binary not found at $Binary" }
 $script:Binary = (Resolve-Path -LiteralPath $Binary).ProviderPath
 if (-not $OutDir) {

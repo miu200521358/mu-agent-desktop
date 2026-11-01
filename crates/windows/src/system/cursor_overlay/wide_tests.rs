@@ -6,14 +6,14 @@ use super::wide;
 /// than as anything pointing here.
 #[test]
 fn the_buffer_ends_with_the_terminator_the_win32_call_looks_for() {
-    let encoded = wide("agent-desktop");
+    let encoded = wide("mu-agent-desktop");
 
     assert_eq!(
         encoded.last(),
         Some(&0),
         "a W entry point reads to the first zero, so a buffer without one is read past its end"
     );
-    assert_eq!(encoded.len(), "agent-desktop".chars().count() + 1);
+    assert_eq!(encoded.len(), "mu-agent-desktop".chars().count() + 1);
 }
 
 /// An empty string still has to produce a buffer, not an empty slice: the

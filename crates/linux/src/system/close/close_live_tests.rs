@@ -22,6 +22,7 @@ fn scoped(app: &str) -> WindowFilter {
     WindowFilter {
         focused_only: false,
         app: Some(app.to_owned()),
+        cloaked_window: None,
     }
 }
 

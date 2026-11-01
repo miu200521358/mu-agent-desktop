@@ -97,7 +97,7 @@ fn spawn(
         AdapterError::internal("Could not locate the cursor overlay executable")
             .with_platform_detail(error.to_string())
     })?;
-    if executable.file_stem().and_then(|name| name.to_str()) != Some("agent-desktop") {
+    if executable.file_stem().and_then(|name| name.to_str()) != Some("mu-agent-desktop") {
         return Ok(());
     }
     let payload = serde_json::to_vec(control).map_err(|error| {

@@ -96,7 +96,7 @@ class HarnessContractTests(unittest.TestCase):
         self.assertLess(cli_build, desktop_lock)
         self.assertLess(ffi_build, desktop_lock)
         self.assertIn(
-            'AGENT_DESKTOP_E2E_RELEASE_BIN="$repo/target/release/agent-desktop"',
+            'AGENT_DESKTOP_E2E_RELEASE_BIN="$repo/target/release/mu-agent-desktop"',
             source,
         )
         self.assertIn(

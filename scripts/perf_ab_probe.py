@@ -27,7 +27,7 @@ ENVS = {}
 def env_for(binary):
     if binary not in ENVS:
         env = dict(os.environ)
-        env["AGENT_DESKTOP_HOME"] = tempfile.mkdtemp(prefix="ad-perf-state-")
+        env["MU_AGENT_DESKTOP_HOME"] = tempfile.mkdtemp(prefix="mu-ad-perf-state-")
         env.pop("AGENT_DESKTOP_SESSION", None)
         ENVS[binary] = env
     return ENVS[binary]
@@ -35,7 +35,7 @@ def env_for(binary):
 
 def run(binary, *args, timeout=90):
     start = time.monotonic()
-    lease = os.environ.get("AGENT_DESKTOP_INTERACTION_LEASE_FD")
+    lease = os.environ.get("MU_AGENT_DESKTOP_INTERACTION_LEASE_FD")
     proc = subprocess.run(
         [binary, *args], capture_output=True, text=True, timeout=timeout, env=env_for(binary),
         pass_fds=(int(lease),) if lease else (),

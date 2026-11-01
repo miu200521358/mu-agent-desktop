@@ -51,16 +51,18 @@ fn resolve_ref_within_deadline(
     context: &CommandContext,
 ) -> Result<(RefEntry, crate::adapter::NativeHandle), AppError> {
     let entry = load_ref_entry(ref_id, context)?;
-    let handle = resolve_handle_within_deadline(adapter, &entry, deadline).inspect_err(|err| {
-        let _ = context.trace_lazy("ref.resolve.error", || {
-            json!({
-                "ref": ref_id,
-                "code": err.code.as_str(),
-                "message": err.message.clone(),
-                "details": err.details.clone()
-            })
-        });
-    })?;
+    let handle =
+        crate::ref_action::window_scope::resolve_element(adapter, &entry, context, deadline)
+            .inspect_err(|err| {
+                let _ = context.trace_lazy("ref.resolve.error", || {
+                    json!({
+                        "ref": ref_id,
+                        "code": err.code.as_str(),
+                        "message": err.message.clone(),
+                        "details": err.details.clone()
+                    })
+                });
+            })?;
     tracing::debug!("resolve: {} resolved successfully", ref_id);
     context.trace_lazy("ref.resolve.ok", || json!({ "ref": ref_id }))?;
     Ok((entry, handle))

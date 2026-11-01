@@ -38,7 +38,7 @@ use windows_sys::Win32::UI::WindowsAndMessaging::{
 };
 
 #[cfg(target_os = "windows")]
-const CLASS_NAME: &str = "AgentDesktopCursorOverlay";
+const CLASS_NAME: &str = "MuAgentDesktopCursorOverlay";
 #[cfg(target_os = "windows")]
 static REGISTER: Once = Once::new();
 
@@ -71,7 +71,7 @@ impl OverlayWindow {
         });
 
         let class = wide(CLASS_NAME);
-        let title = wide("agent-desktop cursor overlay");
+        let title = wide("mu-agent-desktop cursor overlay");
         let handle = unsafe {
             CreateWindowExW(
                 WS_EX_LAYERED

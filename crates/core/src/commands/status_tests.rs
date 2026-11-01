@@ -86,7 +86,7 @@ fn status_reports_resolved_state_root_verbatim() {
         execute_with_report_with_context(&DeniedAdapter, &report, &CommandContext::default())
             .unwrap();
 
-    let expected = guard.path().join(".agent-desktop");
+    let expected = guard.path().join(".mu-agent-desktop");
     assert_eq!(value["state_root"], expected.to_string_lossy().as_ref());
 }
 

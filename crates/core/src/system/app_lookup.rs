@@ -14,10 +14,11 @@ pub(crate) fn resolve_app(
         let candidates = exact_apps(adapter, name, None, deadline)?;
         return select_unique_app(candidates, name);
     }
-    let focused = adapter.list_windows(
+    let focused = adapter.list_windows_with_filter(
         &WindowFilter {
             focused_only: true,
             app: None,
+            cloaked_window: None,
         },
         deadline,
     )?;

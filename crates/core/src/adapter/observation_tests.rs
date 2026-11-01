@@ -1,6 +1,46 @@
 use super::*;
-use crate::{adapter::SnapshotSurface, refs::RefEntry};
-use std::{sync::Mutex, time::Duration};
+use crate::{CloakedWindowTarget, WindowInfo, adapter::SnapshotSurface, refs::RefEntry};
+use std::{
+    sync::{
+        Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
+    time::Duration,
+};
+
+struct InventoryOnly {
+    called: AtomicBool,
+}
+
+impl ObservationOps for InventoryOnly {
+    fn list_windows(
+        &self,
+        _filter: &WindowFilter,
+        _deadline: crate::Deadline,
+    ) -> Result<Vec<WindowInfo>, AdapterError> {
+        self.called.store(true, Ordering::SeqCst);
+        Ok(Vec::new())
+    }
+}
+
+#[test]
+fn unsupported_adapters_reject_cloaked_window_filters_without_listing() {
+    let adapter = InventoryOnly {
+        called: AtomicBool::new(false),
+    };
+    let filter = WindowFilter {
+        focused_only: false,
+        app: None,
+        cloaked_window: Some(CloakedWindowTarget { hwnd: 42, pid: 7 }),
+    };
+
+    let error = adapter
+        .list_windows_with_filter(&filter, crate::Deadline::standard().unwrap())
+        .unwrap_err();
+
+    assert_eq!(error.code, ErrorCode::PlatformNotSupported);
+    assert!(!adapter.called.load(Ordering::SeqCst));
+}
 
 struct TimedResolver {
     observed: Mutex<Option<Duration>>,

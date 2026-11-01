@@ -87,6 +87,7 @@ pub mod wait_selector;
 pub mod wait_surface;
 pub(crate) mod wait_text_match;
 pub(crate) mod wait_timeout;
+pub mod window_diagnostic;
 
 #[cfg(test)]
 mod wait_wakeup_tests;

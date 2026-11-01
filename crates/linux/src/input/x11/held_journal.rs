@@ -11,7 +11,7 @@ use crate::input::held_input::HeldInput;
 use crate::input::keyboard::keymap_edit::KeymapEdit;
 use crate::system::process::{liveness, proc_stat, process_facts};
 
-const JOURNAL_DIR: &str = "agent-desktop-input";
+const JOURNAL_DIR: &str = "mu-agent-desktop-input";
 const RECORD_EXTENSION: &str = "json";
 const QUARANTINE_EXTENSION: &str = "unreadable";
 

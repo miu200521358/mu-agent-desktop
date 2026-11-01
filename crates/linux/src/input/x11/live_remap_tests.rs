@@ -142,7 +142,7 @@ fn live_text_after_own_pending_remap_reaches_the_editor_and_bad_recovery_refuses
         .unwrap()
         .to_owned();
     assert!(row.split_once('=').unwrap().1.trim().is_empty(), "{row}");
-    let record = std::path::Path::new(&runtime).join("agent-desktop-input/4000000000.json");
+    let record = std::path::Path::new(&runtime).join("mu-agent-desktop-input/4000000000.json");
     std::fs::write(&record, "unreadable").unwrap();
     let refused = live_keymap(&display, &lease).unwrap_err();
     assert_eq!(

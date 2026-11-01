@@ -24,7 +24,7 @@ use std::sync::{
 static HOME_LOCK: Mutex<()> = Mutex::new(());
 static HOME_ID: AtomicU64 = AtomicU64::new(1);
 
-/// Clears AGENT_DESKTOP_HOME rather than pinning it: the two layout branches
+/// Clears MU_AGENT_DESKTOP_HOME rather than pinning it: the two layout branches
 /// produce different paths, and a pinned var breaks test layout assumptions.
 struct IsolatedHome {
     _lock: std::sync::MutexGuard<'static, ()>,
@@ -45,9 +45,9 @@ impl IsolatedHome {
         ));
         std::fs::create_dir_all(&path).expect("create isolated FFI test HOME");
         let previous = std::env::var_os("HOME");
-        let previous_state_root = std::env::var_os("AGENT_DESKTOP_HOME");
+        let previous_state_root = std::env::var_os("MU_AGENT_DESKTOP_HOME");
         unsafe { std::env::set_var("HOME", &path) };
-        unsafe { std::env::remove_var("AGENT_DESKTOP_HOME") };
+        unsafe { std::env::remove_var("MU_AGENT_DESKTOP_HOME") };
         Self {
             _lock: lock,
             path,
@@ -64,8 +64,8 @@ impl Drop for IsolatedHome {
             None => unsafe { std::env::remove_var("HOME") },
         }
         match self.previous_state_root.as_ref() {
-            Some(previous) => unsafe { std::env::set_var("AGENT_DESKTOP_HOME", previous) },
-            None => unsafe { std::env::remove_var("AGENT_DESKTOP_HOME") },
+            Some(previous) => unsafe { std::env::set_var("MU_AGENT_DESKTOP_HOME", previous) },
+            None => unsafe { std::env::remove_var("MU_AGENT_DESKTOP_HOME") },
         }
         let _ = std::fs::remove_dir_all(&self.path);
     }

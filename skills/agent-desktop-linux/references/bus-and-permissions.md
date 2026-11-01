@@ -96,18 +96,18 @@ launcher away from the live socket.
 
 ## State root
 
-The state root (`~/.agent-desktop`, or `AGENT_DESKTOP_HOME`) must be private to
+The state root (`~/.mu-agent-desktop`, or `MU_AGENT_DESKTOP_HOME`) must be private to
 the user. A root the tool creates has mode 0700. A root that is group-writable or open to
 other users makes the commands that write there (`snapshot` for one) fail with
 `INTERNAL` and the message "private file parent is accessible by group or other
 users". `status` still runs. Fix an existing root:
 
 ```bash
-chmod 700 "${AGENT_DESKTOP_HOME:-$HOME/.agent-desktop}"
+chmod 700 "${MU_AGENT_DESKTOP_HOME:-$HOME/.mu-agent-desktop}"
 ```
 
 Do not pre-create it with `mkdir -p` under a umask of 002.
 
-The interaction lock lives under `/tmp/agent-desktop-<uid>/`, outside the state
+The interaction lock lives under `/tmp/mu-agent-desktop-<uid>/`, outside the state
 root. It serializes input per user. `TIMEOUT` with `lock_timeout` and a high
 `contention_count` means another agent of the same user is driving input.

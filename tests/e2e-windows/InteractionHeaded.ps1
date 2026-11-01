@@ -70,7 +70,7 @@ function Invoke-HeadedInteractionLegs {
 
             try {
                 <# 'mouse-move' takes --xy (absolute screen coordinates), never
-                   a ref positional argument (agent-desktop.exe mouse-move
+                   a ref positional argument (mu-agent-desktop.exe mouse-move
                    --help) - a ref-shaped call here fails INVALID_ARGS before
                    ever reaching the fixture. `hover` is the ref-resolving
                    action for "move the cursor onto this element", and

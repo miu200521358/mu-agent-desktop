@@ -4,7 +4,7 @@
     Sub-phase 2.6 U6 actionability/occlusion dogfood runner.
 
 .DESCRIPTION
-    Drives target/release/agent-desktop.exe against repo-controlled targets
+    Drives target/release/mu-agent-desktop.exe against repo-controlled targets
     (WinForms/WPF scratch, Notepad as foreign occluder, Explorer, Obsidian when
     present). Verifies by reading JSON envelopes — never the suite's opinion of
     itself. Writes a redacted judgement summary under OutDir.
@@ -39,7 +39,7 @@ $script:RepoRoot = (Resolve-Path (Join-Path $script:ScratchDir '..\..\..')).Prov
 . (Join-Path $script:RepoRoot 'probes\windows\common.ps1')
 Initialize-ProbeRedaction
 
-if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\agent-desktop.exe' }
+if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\mu-agent-desktop.exe' }
 if (-not (Test-Path -LiteralPath $Binary)) { throw "release binary not found at $Binary" }
 $script:Binary = (Resolve-Path -LiteralPath $Binary).ProviderPath
 if (-not $OutDir) {

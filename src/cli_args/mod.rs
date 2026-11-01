@@ -20,6 +20,7 @@ mod snapshot;
 pub(crate) mod snapshot_tree;
 pub(crate) mod system;
 pub(crate) mod trace;
+pub(crate) mod window_diagnostic;
 
 pub(crate) use snapshot::SnapshotArgs;
 

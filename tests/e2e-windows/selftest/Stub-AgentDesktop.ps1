@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 
 <#
-    Stub-AgentDesktop.ps1 - canned-envelope stand-in for agent-desktop.exe,
+    Stub-AgentDesktop.ps1 - canned-envelope stand-in for mu-agent-desktop.exe,
     reachable only from selftest/. Emits scripted JSON from a per-test rule
     table (AGENT_DESKTOP_E2E_STUB_SCRIPT: a .psd1 with a `Rules` array of
     `{ Match, Responses }`), matching the joined argument line against each

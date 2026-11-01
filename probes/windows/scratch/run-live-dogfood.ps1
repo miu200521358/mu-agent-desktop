@@ -38,7 +38,7 @@ $script:RepoRoot = (Resolve-Path (Join-Path $script:ScratchDir '..\..\..')).Prov
 . (Join-Path $script:RepoRoot 'probes\windows\common.ps1')
 Initialize-ProbeRedaction
 
-if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\agent-desktop.exe' }
+if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\mu-agent-desktop.exe' }
 if (-not (Test-Path -LiteralPath $Binary)) { throw "release binary not found at $Binary" }
 $script:Binary = (Resolve-Path -LiteralPath $Binary).ProviderPath
 if (-not $OutDir) { $OutDir = Join-Path $script:RepoRoot 'docs\dogfood-reports\2026-08-03-001-captures' }

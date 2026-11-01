@@ -27,8 +27,8 @@ if [ $# -eq 0 ]; then
   exit 2
 fi
 
-base=${AGENT_DESKTOP_SESSION_BASE:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/agent-desktop-sessions}}
-base=${base:-/tmp/agent-desktop-sessions-$(id -u)}
+base=${AGENT_DESKTOP_SESSION_BASE:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/mu-agent-desktop-sessions}}
+base=${base:-/tmp/mu-agent-desktop-sessions-$(id -u)}
 export AGENT_DESKTOP_SESSION_BASE=$base
 mkdir -p "$base"
 rt=$(mktemp -d "$base/rt.XXXXXX")
@@ -107,7 +107,7 @@ export TMPDIR=$rt/tmp
 export GSETTINGS_BACKEND=keyfile
 export XDG_CURRENT_DESKTOP=GNOME
 export AGENT_DESKTOP_PRIVATE_SESSION=$rt
-export AGENT_DESKTOP_HOME=$rt/ad-home
+export MU_AGENT_DESKTOP_HOME=$rt/ad-home
 
 bus_address="unix:path=$rt/bus"
 dbus-daemon --session --nofork --address="$bus_address" 2> "$rt/bus.log" &
@@ -147,7 +147,7 @@ exec 9>&-
 export DISPLAY=":$display_number"
 
 dbus-update-activation-environment DISPLAY XDG_RUNTIME_DIR XDG_CONFIG_HOME XDG_DATA_HOME \
-  XDG_CACHE_HOME TMPDIR GSETTINGS_BACKEND XDG_CURRENT_DESKTOP AGENT_DESKTOP_PRIVATE_SESSION AGENT_DESKTOP_HOME
+  XDG_CACHE_HOME TMPDIR GSETTINGS_BACKEND XDG_CURRENT_DESKTOP AGENT_DESKTOP_PRIVATE_SESSION MU_AGENT_DESKTOP_HOME
 
 if [ "$wm" = 1 ]; then
   wm_root=${AGENT_DESKTOP_WM_ROOT:-/}

@@ -10,7 +10,7 @@ fn a_name_nobody_serves_reports_no_renderer_rather_than_an_error() {
     let control = CursorOverlayControl::enable("s0000001".into(), CursorOverlayStyle::default());
 
     let outcome = reach(
-        r"\\.\pipe\agent-desktop-cursor-nothing-serves-this",
+        r"\\.\pipe\mu-agent-desktop-cursor-nothing-serves-this",
         &control,
         Duration::from_millis(50),
     );
@@ -31,7 +31,7 @@ fn an_absent_renderer_answers_well_inside_the_budget() {
     let started = std::time::Instant::now();
 
     let _ = reach(
-        r"\\.\pipe\agent-desktop-cursor-nothing-serves-this-either",
+        r"\\.\pipe\mu-agent-desktop-cursor-nothing-serves-this-either",
         &control,
         Duration::from_millis(400),
     );

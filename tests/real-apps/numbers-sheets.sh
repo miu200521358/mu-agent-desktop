@@ -12,7 +12,7 @@ first=$3
 second=$4
 cycles=${5:-5}
 [[ "$binary" = /* && -x "$binary" ]]
-[[ "${AGENT_DESKTOP_HOME:-}" = /* ]]
+[[ "${MU_AGENT_DESKTOP_HOME:-}" = /* ]]
 [[ "$window" =~ ^w-[0-9]+$ ]]
 [[ "$first" =~ ^@s[a-z0-9]+:e[0-9]+$ ]]
 [[ "$second" =~ ^@s[a-z0-9]+:e[0-9]+$ && "$first" != "$second" ]]

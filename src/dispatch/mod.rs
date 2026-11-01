@@ -68,7 +68,7 @@ fn dispatch_command(
     let result = match cmd {
         Commands::Snapshot(args) => observation::snapshot(args, adapter, context),
         Commands::Find(args) => observation::find(args, adapter, context),
-        Commands::Screenshot(args) => observation::screenshot(args, adapter),
+        Commands::Screenshot(args) => observation::screenshot(args, adapter, context),
         Commands::Get(args) => observation::get(args, adapter, context),
         Commands::Is(args) => observation::is(args, adapter, context),
         Commands::Click(args) => interaction::click(args, adapter, context),
@@ -100,6 +100,14 @@ fn dispatch_command(
         Commands::Launch(args) => app_window::launch(args, adapter),
         Commands::CloseApp(args) => app_window::close_app(args, adapter),
         Commands::ListWindows(args) => app_window::list_windows(args, adapter),
+        Commands::WindowDiagnostic(args) => commands::window_diagnostic::execute(
+            commands::window_diagnostic::WindowDiagnosticArgs {
+                pid: args.pid.unwrap_or_default(),
+                app: args.app,
+                window_id: args.window_id,
+            },
+            adapter,
+        ),
         Commands::ListDisplays => commands::list_displays::execute(adapter),
         Commands::ListApps(args) => app_window::list_apps(args, adapter),
         Commands::FocusWindow(args) => app_window::focus_window(args, adapter),
@@ -108,7 +116,7 @@ fn dispatch_command(
         Commands::Minimize(args) => app_window::minimize(args, adapter),
         Commands::Maximize(args) => app_window::maximize(args, adapter),
         Commands::Restore(args) => app_window::restore(args, adapter),
-        Commands::ListSurfaces(args) => app_window::list_surfaces(args, adapter),
+        Commands::ListSurfaces(args) => app_window::list_surfaces(args, adapter, context),
         Commands::OpenSystemSurface(args) => {
             app_window::open_system_surface(args, adapter, context)
         }

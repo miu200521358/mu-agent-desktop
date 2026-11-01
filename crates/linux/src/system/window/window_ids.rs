@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::system::app::runtime_store::{instance_stem, runtime_subdir, write_private_atomically};
 
-const IDS_DIR: &str = "agent-desktop-window-ids";
+const IDS_DIR: &str = "mu-agent-desktop-window-ids";
 
 /// The ids windows were listed under, kept per X11 client and process
 /// instance in a private directory of the runtime dir. A process that has

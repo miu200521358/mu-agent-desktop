@@ -89,14 +89,14 @@ def check_prerequisites(
     if reason:
         missing.append(reason)
     binary = env.get("AGENT_DESKTOP_E2E_BIN_SRC") or env.get("AGENT_DESKTOP_E2E_BIN") or str(
-        session.HARNESS_ROOT.parent.parent / "target" / "release" / "agent-desktop"
+        session.HARNESS_ROOT.parent.parent / "target" / "release" / "mu-agent-desktop"
     )
     if not Path(binary).is_file():
         missing.append(f"missing release binary: {binary}")
     session_base = Path(
         env.get("AGENT_DESKTOP_SESSION_BASE")
-        or (Path(env["XDG_RUNTIME_DIR"]) / "agent-desktop-sessions"
-            if env.get("XDG_RUNTIME_DIR") else Path(f"/tmp/agent-desktop-sessions-{os.getuid()}"))
+        or (Path(env["XDG_RUNTIME_DIR"]) / "mu-agent-desktop-sessions"
+            if env.get("XDG_RUNTIME_DIR") else Path(f"/tmp/mu-agent-desktop-sessions-{os.getuid()}"))
     )
     try:
         session_base.mkdir(mode=0o700, parents=True, exist_ok=True)

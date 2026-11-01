@@ -20,6 +20,7 @@ fn scoped(app: &str) -> WindowFilter {
     WindowFilter {
         focused_only: false,
         app: Some(app.to_owned()),
+        cloaked_window: None,
     }
 }
 
@@ -100,6 +101,7 @@ fn check_stopped_app(program: &str, args: &[&str], registry_name: Option<&str>) 
     let everything = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     let all = list_windows(&bus, &everything, deadline()).expect("an unscoped listing");
     let held = all

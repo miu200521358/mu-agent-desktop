@@ -1,13 +1,26 @@
+//! Trait fragments use module-scope macros because `include!` cannot expand
+//! associated items directly inside a trait.
+
 use crate::{
     AdapterError, AdapterSession, AppInfo, CursorOverlayControl, Deadline,
     DismissAllNotificationsRequest, DismissNotificationRequest, ImageBuffer, InteractionLease,
     InteractionPolicy, KeyCombo, NotificationActionRequest, NotificationFilter, NotificationInfo,
     OperationReport, PermissionReport, PermissionState, ProcessIdentity, SessionAffinity,
-    SignalBaseline, SignalFilter, WindowInfo, WindowOp, actions::action_result::ActionResult,
-    system::display_info::DisplayInfo, system::screenshot_target::ScreenshotTarget,
+    SignalBaseline, SignalFilter, WindowInfo, WindowOp,
+    actions::action_result::ActionResult,
+    system::{
+        display_info::DisplayInfo,
+        screenshot_target::ScreenshotTarget,
+        window_diagnostic::{WindowDiagnosticQuery, WindowDiagnosticReport},
+        window_filter::WindowFilter,
+    },
 };
 
+include!("system_cloaked_window_ops.rs");
+
 pub trait SystemOps: Send + Sync {
+    system_cloaked_window_ops!();
+
     fn update_cursor_overlay(&self, _control: &CursorOverlayControl) -> Result<(), AdapterError> {
         Err(AdapterError::not_supported("update_cursor_overlay"))
     }

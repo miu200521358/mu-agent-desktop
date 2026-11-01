@@ -13,7 +13,7 @@ fn session_lease_contender() {
         return;
     };
     if expected == "blocked" {
-        let path = format!("/tmp/agent-desktop-{}/interaction.lock", unsafe {
+        let path = format!("/tmp/mu-agent-desktop-{}/interaction.lock", unsafe {
             libc::geteuid()
         });
         let file = std::fs::OpenOptions::new()

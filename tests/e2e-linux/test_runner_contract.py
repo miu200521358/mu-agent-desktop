@@ -138,12 +138,12 @@ class GateTests(unittest.TestCase):
 
     def test_session_base_defaults_and_overrides(self):
         cases = (
-            ({}, Path("/tmp/agent-desktop-sessions-1234")),
-            ({"XDG_RUNTIME_DIR": ""}, Path("/tmp/agent-desktop-sessions-1234")),
-            ({"AGENT_DESKTOP_SESSION_BASE": ""}, Path("/tmp/agent-desktop-sessions-1234")),
-            ({"XDG_RUNTIME_DIR": "/runtime"}, Path("/runtime/agent-desktop-sessions")),
+            ({}, Path("/tmp/mu-agent-desktop-sessions-1234")),
+            ({"XDG_RUNTIME_DIR": ""}, Path("/tmp/mu-agent-desktop-sessions-1234")),
+            ({"AGENT_DESKTOP_SESSION_BASE": ""}, Path("/tmp/mu-agent-desktop-sessions-1234")),
+            ({"XDG_RUNTIME_DIR": "/runtime"}, Path("/runtime/mu-agent-desktop-sessions")),
             ({"AGENT_DESKTOP_SESSION_BASE": "", "XDG_RUNTIME_DIR": "/runtime"},
-             Path("/runtime/agent-desktop-sessions")),
+             Path("/runtime/mu-agent-desktop-sessions")),
             ({"AGENT_DESKTOP_SESSION_BASE": "/custom", "XDG_RUNTIME_DIR": "/runtime"},
              Path("/custom")),
             ({"AGENT_DESKTOP_SESSION_BASE": "/custom"}, Path("/custom")),

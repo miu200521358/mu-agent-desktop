@@ -16,7 +16,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 export const bin =
   process.env.AGENT_DESKTOP_BIN ??
-  (existsSync(join(REPO, "target/release/agent-desktop")) ? join(REPO, "target/release/agent-desktop") : "agent-desktop");
+  (existsSync(join(REPO, "target/release/mu-agent-desktop")) ? join(REPO, "target/release/mu-agent-desktop") : "mu-agent-desktop");
 
 export const cli = (...argv) => {
   try {

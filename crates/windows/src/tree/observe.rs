@@ -2,12 +2,12 @@ use std::time::{Duration, Instant};
 
 use agent_desktop_core::{
     AdapterError, Deadline, ErrorCode, ObservationRequest, ObservationRoot, ObservedTree,
-    ProcessId, ProcessIdentity,
+    ProcessId, ProcessIdentity, WindowFilter,
 };
 use serde_json::json;
 
 use super::chromium;
-use super::surfaces::surface_root;
+use super::surfaces::surface_root_with_filter;
 use super::walk::walker::{DEFAULT_MAX_RAW_DEPTH, WalkBudget, WalkOutcome};
 use super::walk::walker_source::walk_uia_subtree;
 
@@ -49,8 +49,13 @@ pub(crate) fn observe_tree(
     adapter: &crate::adapter::WindowsAdapter,
 ) -> Result<ObservedTree, AdapterError> {
     let request = (*request).validate()?;
-    re_verify_root(root)?;
-    let element = surface_root(root, request.surface, request.deadline)?;
+    re_verify_root(root, request.cloaked_window_target, request.deadline)?;
+    let filter = WindowFilter {
+        focused_only: false,
+        app: None,
+        cloaked_window: request.cloaked_window_target,
+    };
+    let element = surface_root_with_filter(root, request.surface, &filter, request.deadline)?;
     let chromium_root = chromium::is_chromium_root(&element);
     let budget = WalkBudget::new(request.max_logical_depth, request.deadline)
         .with_max_raw_depth(request.max_raw_depth.min(DEFAULT_MAX_RAW_DEPTH));
@@ -65,7 +70,7 @@ pub(crate) fn observe_tree(
             outcome,
             walk_duration: walk_started.elapsed(),
         },
-        re_verify_root,
+        |root| re_verify_root(root, request.cloaked_window_target, request.deadline),
     )
 }
 
@@ -164,7 +169,27 @@ fn still_thin_after_settle() -> AdapterError {
 }
 
 /// Rechecks stored ownership and generation evidence after the UIA read.
-fn re_verify_root(root: ObservationRoot<'_>) -> Result<(), AdapterError> {
+fn re_verify_root(
+    root: ObservationRoot<'_>,
+    target: Option<agent_desktop_core::CloakedWindowTarget>,
+    deadline: Deadline,
+) -> Result<(), AdapterError> {
+    if let Some(target) = target {
+        let window = window_identity_for_root(root)?;
+        if window.id != target.window_id() || window.pid != target.pid {
+            return Err(window_identity_changed());
+        }
+        return crate::system::window::window_resolve::resolve_window_strict_with_filter(
+            &window,
+            &WindowFilter {
+                focused_only: false,
+                app: None,
+                cloaked_window: Some(target),
+            },
+            deadline,
+        )
+        .map(|_| ());
+    }
     match root {
         ObservationRoot::Window(window) => {
             let handle = hwnd_of(&window.id)?;
@@ -178,6 +203,30 @@ fn re_verify_root(root: ObservationRoot<'_>) -> Result<(), AdapterError> {
         }
         ObservationRoot::Element { entry, .. } => {
             verify_process_identity(entry.process.pid, entry.process.process_instance.as_deref())
+        }
+    }
+}
+
+fn window_identity_for_root(
+    root: ObservationRoot<'_>,
+) -> Result<agent_desktop_core::WindowInfo, AdapterError> {
+    match root {
+        ObservationRoot::Window(window) => Ok(window.clone()),
+        ObservationRoot::Element { entry, .. } => {
+            let id = entry
+                .source
+                .source_window_id
+                .clone()
+                .ok_or_else(window_identity_changed)?;
+            Ok(agent_desktop_core::WindowInfo {
+                id,
+                title: entry.source.source_window_title.clone().unwrap_or_default(),
+                app: entry.source.source_app.clone().unwrap_or_default(),
+                pid: entry.process.pid,
+                process_instance: entry.process.process_instance.clone(),
+                bounds: None,
+                state: Default::default(),
+            })
         }
     }
 }

@@ -1,3 +1,3 @@
 function Invoke-VersionLeg {
-    [System.Diagnostics.Process]::Start('agent-desktop.exe', 'version')
+    [System.Diagnostics.Process]::Start('mu-agent-desktop.exe', 'version')
 }

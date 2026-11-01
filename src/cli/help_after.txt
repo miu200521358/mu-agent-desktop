@@ -32,5 +32,5 @@ ENVIRONMENT
   AGENT_DESKTOP_SESSION      Session ID fallback when --session is not passed
   AGENT_DESKTOP_AGENT_ID     Subagent ID fallback when --agent-id is not passed
                              (1-64 letters, digits, hyphen or underscore)
-  AGENT_DESKTOP_HOME         Relocates the state root (absolute path; default
-                             ~/.agent-desktop); `status` reports it as state_root
+  MU_AGENT_DESKTOP_HOME      Relocates the state root (absolute path; default
+                             ~/.mu-agent-desktop); `status` reports it as state_root

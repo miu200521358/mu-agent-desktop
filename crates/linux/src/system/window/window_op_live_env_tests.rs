@@ -129,9 +129,9 @@ impl InnerSession {
             .unwrap_or_else(|| {
                 std::env::var_os("XDG_RUNTIME_DIR")
                     .filter(|value| !value.is_empty())
-                    .map(|runtime| PathBuf::from(runtime).join("agent-desktop-sessions"))
+                    .map(|runtime| PathBuf::from(runtime).join("mu-agent-desktop-sessions"))
                     .unwrap_or_else(|| {
-                        PathBuf::from(format!("/tmp/agent-desktop-sessions-{}", unsafe {
+                        PathBuf::from(format!("/tmp/mu-agent-desktop-sessions-{}", unsafe {
                             libc::getuid()
                         }))
                     })

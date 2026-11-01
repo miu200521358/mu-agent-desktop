@@ -120,6 +120,7 @@ pub use storage::state_root::validate_state_root_env;
 pub use system::app_info::{AppInfo, AppPresentation, app_name_matches};
 pub use system::app_inventory::AppInventory;
 pub use system::app_inventory_query::AppInventoryQuery;
+pub use system::cloaked_window_target::CloakedWindowTarget;
 pub use system::display_info::DisplayInfo;
 pub use system::image_buffer::{ImageBuffer, MAX_PNG_INPUT_BYTES, parse_png_dimensions};
 pub use system::image_format::ImageFormat;
@@ -131,6 +132,10 @@ pub use system::process_id::ProcessId;
 pub use system::process_identity::ProcessIdentity;
 pub use system::screenshot_target::ScreenshotTarget;
 pub use system::surface_info::SurfaceInfo;
+pub use system::window_diagnostic::{
+    CloakDiagnostic, VirtualDesktopDiagnostic, WindowDiagnosticIdentity, WindowDiagnosticQuery,
+    WindowDiagnosticRecord, WindowDiagnosticReport, WindowDiagnosticState, WindowInventoryDecision,
+};
 pub use system::window_filter::WindowFilter;
 pub use system::window_info::WindowInfo;
 pub use system::window_op::WindowOp;

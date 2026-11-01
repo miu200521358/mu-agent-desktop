@@ -227,14 +227,14 @@ fn temp_lease_entries(parent: &Path) -> Vec<String> {
         .unwrap()
         .flatten()
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .filter(|name| name.starts_with(".agent-desktop-tmp-"))
+        .filter(|name| name.starts_with(".mu-agent-desktop-tmp-p"))
         .collect()
 }
 
 #[test]
 fn a_write_reclaims_an_orphan_lease_directory_no_live_writer_holds() {
     let scratch = Scratch::new("sweep-stale");
-    let stale = scratch.path().join(".agent-desktop-tmp-p4294967295");
+    let stale = scratch.path().join(".mu-agent-desktop-tmp-p4294967295");
     std::fs::create_dir(&stale).unwrap();
     std::fs::write(stale.join(".orphan.tmp"), b"leftover").unwrap();
     let ops = WindowsPrivateFile::new();
@@ -251,7 +251,7 @@ fn a_write_reclaims_an_orphan_lease_directory_no_live_writer_holds() {
 #[test]
 fn a_lease_directory_held_without_share_delete_survives_a_concurrent_writes_sweep() {
     let scratch = Scratch::new("sweep-live");
-    let foreign = scratch.path().join(".agent-desktop-tmp-p1");
+    let foreign = scratch.path().join(".mu-agent-desktop-tmp-p1");
     std::fs::create_dir(&foreign).unwrap();
     let liveness_handle = OpenOptions::new()
         .read(true)
@@ -301,7 +301,7 @@ fn write_atomic_leaves_no_temp_lease_residue_on_success_or_failure() {
     assert_eq!(
         temp_lease_entries(scratch.path()),
         Vec::<String>::new(),
-        "a successful write must leave no .agent-desktop-tmp-* residue"
+        "a successful write must leave no .mu-agent-desktop-tmp-p* residue"
     );
 
     let held = open_reader_with_share(&destination, FILE_SHARE_READ);
@@ -311,7 +311,7 @@ fn write_atomic_leaves_no_temp_lease_residue_on_success_or_failure() {
     assert_eq!(
         temp_lease_entries(scratch.path()),
         Vec::<String>::new(),
-        "a failed write must leave no .agent-desktop-tmp-* residue"
+        "a failed write must leave no .mu-agent-desktop-tmp-p* residue"
     );
     assert_eq!(std::fs::read(&destination).unwrap(), b"first");
 }

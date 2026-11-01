@@ -33,6 +33,22 @@ fn rejects_per_item_cursor_configuration() {
 }
 
 #[test]
+fn batch_entries_cannot_supply_cloaked_window_permission() {
+    let error = agent_desktop_core::commands::batch::parse_commands(
+        r#"[{"command":"snapshot","cloaked_window":"w-42","args":{}}]"#,
+    )
+    .expect_err("the command envelope does not accept per-item window permission");
+    assert_eq!(error.code(), "INVALID_ARGS");
+
+    let error = parse_command(item(
+        "snapshot",
+        serde_json::json!({ "cloaked_window": "w-42" }),
+    ))
+    .expect_err("the command arguments do not accept per-item window permission");
+    assert_eq!(error.code(), "INVALID_ARGS");
+}
+
+#[test]
 fn session_batch_rejects_unknown_field() {
     assert!(
         parse_command(item("session", serde_json::json!({ "action": "start" }))).is_ok(),

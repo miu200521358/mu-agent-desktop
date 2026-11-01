@@ -315,8 +315,9 @@ fn sheet_live_gtk3_about_is_a_showing_dialog_sheet() {
     launched.spawn("gnome-terminal", &[]);
     let (pid, before) = poll("the terminal window", || {
         let filter = WindowFilter {
-            focused_only: false,
             app: Some("gnome-terminal-server".to_owned()),
+            focused_only: false,
+            cloaked_window: None,
         };
         let windows = list_windows(&bus, &filter, deadline()).ok()?;
         windows

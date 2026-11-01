@@ -45,7 +45,7 @@ fn adapter_create_without_ad_init_installs_the_windows_private_file_ops() {
         let home = PathBuf::from(std::env::var_os("HOME").expect("isolated HOME is set"));
         let target = home.join("junction-target");
         std::fs::create_dir_all(&target).expect("create junction target");
-        plant_junction(&home.join(".agent-desktop"), &target);
+        plant_junction(&home.join(".mu-agent-desktop"), &target);
 
         let started = start_session(StartSessionOptions::default());
 

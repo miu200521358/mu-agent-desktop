@@ -31,7 +31,7 @@ $script:MediumSid = 'S-1-16-8192'
 $script:LowSid = 'S-1-16-4096'
 
 function Get-SplitIntegrityStagedBinary {
-    <# The same staged, hash-verified agent-desktop.exe the High-side harness
+    <# The same staged, hash-verified mu-agent-desktop.exe the High-side harness
        calls through Invoke-AgentDesktop (Lib.psm1's Get-TargetBinary), so a
        Medium/Low spawn runs the identical artifact under test. Passed
        explicitly into StagedProcess.psm1's Invoke-StagedAgentDesktop below,

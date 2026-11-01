@@ -52,6 +52,18 @@ pub trait ObservationOps: Send + Sync {
         Err(AdapterError::not_supported("list_windows"))
     }
 
+    /// Lists windows under a caller-scoped filter; unsupported target permissions fail closed.
+    fn list_windows_with_filter(
+        &self,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<Vec<WindowInfo>, AdapterError> {
+        if filter.cloaked_window.is_some() {
+            return Err(AdapterError::not_supported("list_windows_with_filter"));
+        }
+        self.list_windows(filter, deadline)
+    }
+
     fn list_apps(&self, _deadline: Deadline) -> Result<Vec<AppInfo>, AdapterError> {
         Err(AdapterError::not_supported("list_apps"))
     }
@@ -127,12 +139,41 @@ pub trait ObservationOps: Send + Sync {
         Err(AdapterError::not_supported("get_tree"))
     }
 
+    /// Resolves a tree under a purpose-specific window filter; unsupported adapters fail closed.
+    fn get_tree_with_filter(
+        &self,
+        window: &WindowInfo,
+        options: &TreeOptions,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<AccessibilityNode, AdapterError> {
+        if filter.cloaked_window.is_some() {
+            return Err(AdapterError::not_supported("get_tree_with_filter"));
+        }
+        self.get_tree(window, options, deadline)
+    }
+
     fn resolve_element_strict(
         &self,
         _entry: &RefEntry,
         _deadline: Deadline,
     ) -> Result<NativeHandle, AdapterError> {
         Err(AdapterError::not_supported("resolve_element_strict"))
+    }
+
+    /// Resolves a ref while retaining its caller's exact window permission.
+    fn resolve_element_strict_with_filter(
+        &self,
+        entry: &RefEntry,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<NativeHandle, AdapterError> {
+        if filter.cloaked_window.is_some() {
+            return Err(AdapterError::not_supported(
+                "resolve_element_strict_with_filter",
+            ));
+        }
+        self.resolve_element_strict(entry, deadline)
     }
 
     fn resolve_locator_anchor(
@@ -149,6 +190,19 @@ pub trait ObservationOps: Send + Sync {
         _deadline: Deadline,
     ) -> Result<Vec<SurfaceInfo>, AdapterError> {
         Err(AdapterError::not_supported("list_surfaces"))
+    }
+
+    /// Lists surfaces without widening a one-window permission to sibling windows.
+    fn list_surfaces_with_filter(
+        &self,
+        process: crate::ProcessIdentity,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<Vec<SurfaceInfo>, AdapterError> {
+        if filter.cloaked_window.is_some() {
+            return Err(AdapterError::not_supported("list_surfaces_with_filter"));
+        }
+        self.list_surfaces(process, deadline)
     }
 
     /// Reads an already-open OS-chrome surface - the Start menu, the taskbar,

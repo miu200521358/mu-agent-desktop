@@ -1,4 +1,6 @@
-use crate::{AdapterError, CursorOverlayConfig, InteractionPolicy, SignalBaseline};
+use crate::{
+    AdapterError, CloakedWindowTarget, CursorOverlayConfig, InteractionPolicy, SignalBaseline,
+};
 
 use super::WaitSelector;
 
@@ -9,9 +11,11 @@ pub(super) struct CommandOptions {
     pub event_baseline: Option<Result<SignalBaseline, AdapterError>>,
     pub cursor_overlay: CursorOverlayConfig,
     pub agent_id: Option<String>,
+    pub cloaked_window_target: Option<CloakedWindowTarget>,
 }
 
 impl CommandOptions {
+    /// Batch children drop window authorization because it belongs to one command only.
     pub fn for_batch(&self, cursor_overlay: CursorOverlayConfig) -> Self {
         Self {
             interaction_policy: self.interaction_policy,
@@ -19,6 +23,7 @@ impl CommandOptions {
             event_baseline: None,
             cursor_overlay,
             agent_id: self.agent_id.clone(),
+            cloaked_window_target: None,
         }
     }
 }

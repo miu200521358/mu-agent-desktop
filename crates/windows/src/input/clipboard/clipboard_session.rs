@@ -113,7 +113,7 @@ fn owner_hwnd() -> Result<HWND, AdapterError> {
 
 fn create_message_owner_window() -> HWND {
     let class = wide("STATIC");
-    let title = wide("agent-desktop-clipboard-owner");
+    let title = wide("mu-agent-desktop-clipboard-owner");
     unsafe {
         CreateWindowExW(
             0,

@@ -17,7 +17,7 @@ const INHERITED_FROM_PARENT: [&str; 5] = [
     "DISPLAY",
     "XAUTHORITY",
     "XDG_RUNTIME_DIR",
-    "AGENT_DESKTOP_HOME",
+    "MU_AGENT_DESKTOP_HOME",
     "HOME",
 ];
 const LOWEST_INHERITED_FD: i32 = 3;

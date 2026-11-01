@@ -81,10 +81,13 @@ fn target_center(
     .flatten()
     .and_then(center_of);
     stored.or_else(|| {
-        let handle = context
-            .adapter
-            .resolve_element_strict(context.entry, deadline)
-            .ok()?;
+        let handle = super::window_scope::resolve_element(
+            context.adapter,
+            context.entry,
+            context.context,
+            deadline,
+        )
+        .ok()?;
         let bounds = context
             .adapter
             .get_element_bounds(&handle, deadline)

@@ -44,10 +44,11 @@ fn resolve_window(
 ) -> Result<WindowInfo, AppError> {
     if let Some(window_id) = window_id {
         let candidates = adapter
-            .list_windows(
+            .list_windows_with_filter(
                 &WindowFilter {
                     focused_only: false,
                     app: app.map(str::to_string),
+                    cloaked_window: None,
                 },
                 deadline,
             )?

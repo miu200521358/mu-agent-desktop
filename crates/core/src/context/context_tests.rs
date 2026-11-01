@@ -219,6 +219,15 @@ fn batch_item_clears_wait_selector() {
 }
 
 #[test]
+fn batch_item_does_not_inherit_cloaked_window_permission() {
+    let target = crate::CloakedWindowTarget::parse("w-42", 7).expect("valid target");
+    let parent = CommandContext::default().with_cloaked_window_target(target);
+    let child = parent.for_batch_item(None).expect("batch context");
+    assert_eq!(parent.cloaked_window_target(), Some(target));
+    assert_eq!(child.cloaked_window_target(), None);
+}
+
+#[test]
 fn batch_item_inherits_or_overrides_session_without_trace_loss() {
     let path = std::env::temp_dir().join("agent-desktop-context-test.jsonl");
     let _ = std::fs::remove_file(&path);

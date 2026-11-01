@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 
 use crate::system::app::runtime_store::{runtime_subdir, write_private_atomically};
 
-const DIR_NAME: &str = "agent-desktop-actions";
+const DIR_NAME: &str = "mu-agent-desktop-actions";
 const NO_TOKEN: &str = "-";
 const KEEP_MS: u64 = 60_000;
 

@@ -107,14 +107,16 @@ Every command prints one envelope with `ok` and either `data` or `error`. An err
 
 ## Commands
 
-It ships 60 command names, 56 operational commands. The other four (`key-down`, `key-up`, `mouse-down`, `mouse-up`) refuse to run until a daemon can release a held key or button.
+It ships 61 command names, 57 operational on at least one platform and 56 operational on macOS. Five commands do not operate on macOS:
+the four held-input names (`key-down`, `key-up`, `mouse-down`, `mouse-up`) refuse to run until a daemon can release a held key or button, and
+`window-diagnostic` returns `PLATFORM_NOT_SUPPORTED`.
 
 | Group | Commands |
 |---|---|
 | Observe | `snapshot`, `find`, `get`, `is`, `screenshot`, `list-surfaces` |
 | Act on a ref | `click`, `double-click`, `triple-click`, `right-click`, `type`, `set-value`, `clear`, `focus`, `select`, `toggle`, `check`, `uncheck`, `expand`, `collapse`, `scroll`, `scroll-to` |
 | Keyboard and mouse | `press`, `hover`, `drag`, `mouse-move`, `mouse-click`, `mouse-wheel`, `key-down`, `key-up`, `mouse-down`, `mouse-up` |
-| Apps and windows | `launch`, `close-app`, `list-apps`, `list-windows`, `list-displays`, `focus-window`, `resize-window`, `move-window`, `minimize`, `maximize`, `restore`, `open-system-surface` |
+| Apps and windows | `launch`, `close-app`, `list-apps`, `list-windows`, `window-diagnostic`, `list-displays`, `focus-window`, `resize-window`, `move-window`, `minimize`, `maximize`, `restore`, `open-system-surface` |
 | Notifications | `list-notifications`, `dismiss-notification`, `dismiss-all-notifications`, `notification-action` |
 | Clipboard | `clipboard-get`, `clipboard-set`, `clipboard-clear` |
 | Wait | `wait` |

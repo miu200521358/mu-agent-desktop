@@ -10,7 +10,7 @@ use crate::{
     ref_action::ref_action_wait_evidence::{failed_check, should_scroll_after_preflight},
     ref_action::ref_action_wait_support::{trace_resolve_error, trace_resolve_ok},
     ref_action::{ResolvedRefAction, into_adapter_error, preflight_resolved},
-    refs::ref_resolve_deadline::{POLL_INTERVAL, resolve_within_deadline},
+    refs::ref_resolve_deadline::{POLL_INTERVAL, resolve_within_deadline_for_target},
     refs::resolve_attempt_outcome::ResolveAttemptOutcome,
 };
 
@@ -38,7 +38,12 @@ pub(crate) fn execute_poll_loop(
     };
     loop {
         state.resolve_attempts = state.resolve_attempts.saturating_add(1);
-        match resolve_within_deadline(context.adapter, context.entry, deadline) {
+        match resolve_within_deadline_for_target(
+            context.adapter,
+            context.entry,
+            context.context.cloaked_window_target(),
+            deadline,
+        ) {
             ResolveAttemptOutcome::DeadlinePassed => return Err(timeout(&state, deadline)),
             ResolveAttemptOutcome::Failed(error) => {
                 handle_resolve_failure(

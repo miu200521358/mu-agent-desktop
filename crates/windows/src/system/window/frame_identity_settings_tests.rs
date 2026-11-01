@@ -241,7 +241,7 @@ fn focused_window_reports_the_frame_handle_with_the_hosted_application_identity(
     };
     let filter = WindowFilter {
         focused_only: true,
-        app: None,
+        ..WindowFilter::default()
     };
     let focused = list_windows_live(&filter, deadline(15_000)).expect("the listing succeeds");
     let entry = focused
@@ -287,6 +287,7 @@ fn list_windows_app_scoping_agrees_with_focused_window_on_a_hosted_application()
         &WindowFilter {
             focused_only: false,
             app: Some(String::from("SystemSettings")),
+            ..WindowFilter::default()
         },
         deadline(15_000),
     )
@@ -298,7 +299,7 @@ fn list_windows_app_scoping_agrees_with_focused_window_on_a_hosted_application()
     let focused = list_windows_live(
         &WindowFilter {
             focused_only: true,
-            app: None,
+            ..WindowFilter::default()
         },
         deadline(15_000),
     )
@@ -347,7 +348,7 @@ fn focus_window_succeeds_against_the_identity_focused_window_reported() {
     };
     let filter = WindowFilter {
         focused_only: true,
-        app: None,
+        ..WindowFilter::default()
     };
     let focused = list_windows_live(&filter, deadline(15_000)).expect("the listing succeeds");
     let entry = focused

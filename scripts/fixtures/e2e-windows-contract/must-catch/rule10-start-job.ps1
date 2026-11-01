@@ -1,3 +1,3 @@
 function Invoke-VersionLeg {
-    Start-Job -ScriptBlock { agent-desktop.exe version }
+    Start-Job -ScriptBlock { mu-agent-desktop.exe version }
 }

@@ -66,10 +66,11 @@ fn observed_focused_window(
     match adapter.focused_window(deadline) {
         Ok(window) => Ok(window),
         Err(err) if err.code == ErrorCode::PlatformNotSupported => adapter
-            .list_windows(
+            .list_windows_with_filter(
                 &WindowFilter {
                     focused_only: true,
                     app: app.map(str::to_string),
+                    cloaked_window: None,
                 },
                 deadline,
             )

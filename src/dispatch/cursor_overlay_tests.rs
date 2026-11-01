@@ -39,7 +39,7 @@ impl SystemOps for RenderingAdapter {
 }
 
 /// The one home-isolation mechanism this crate has. A second one with its own
-/// lock would not exclude the first: both set `AGENT_DESKTOP_HOME`, so two
+/// lock would not exclude the first: both set `MU_AGENT_DESKTOP_HOME`, so two
 /// independent mutexes leave the tests racing over one global and failing with
 /// a session whose manifest another test's home had already replaced.
 fn start_session() -> String {

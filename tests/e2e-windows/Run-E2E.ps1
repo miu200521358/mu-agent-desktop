@@ -120,12 +120,12 @@ try {
         $ok = Write-Verdict
     } else {
         $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-        $sourceBinary = if ($AgentDesktopBinary) { $AgentDesktopBinary } else { Join-Path $repoRoot 'target\release\agent-desktop.exe' }
+        $sourceBinary = if ($AgentDesktopBinary) { $AgentDesktopBinary } else { Join-Path $repoRoot 'target\release\mu-agent-desktop.exe' }
         $fixtureExe = if ($FixtureBinary) { $FixtureBinary } else { Join-Path $repoRoot 'tests\fixture-app-windows\build\AgentDeskFixture.exe' }
         $manifestPath = Join-Path (Split-Path -Parent $fixtureExe) 'AgentDeskFixture.ids.txt'
 
         $isolated = Enter-IsolatedEnvironment
-        $stagedPath = Join-Path $isolated.SuiteRoot 'bin\agent-desktop.exe'
+        $stagedPath = Join-Path $isolated.SuiteRoot 'bin\mu-agent-desktop.exe'
         $staged = Copy-ImmutableArtifact -Source $sourceBinary -Destination $stagedPath
         Set-TargetBinary -FilePath $staged.Path
 
@@ -145,13 +145,13 @@ try {
         Wait-ForFixtureReady -App $FixtureAppName
 
         if (-not (Test-ImmutableArtifactHash -Path $staged.Path -ExpectedSha256 $staged.Sha256)) {
-            throw 'Run-E2E.ps1: the staged agent-desktop.exe hash no longer matches what was verified at staging time'
+            throw 'Run-E2E.ps1: the staged mu-agent-desktop.exe hash no longer matches what was verified at staging time'
         }
 
         Invoke-ScenarioSequence -App $FixtureAppName -FixtureIdentity $fixtureIdentity -ManifestPath $manifestPath
 
         if (-not (Test-ImmutableArtifactHash -Path $staged.Path -ExpectedSha256 $staged.Sha256)) {
-            throw 'Run-E2E.ps1: the staged agent-desktop.exe hash changed during the run; the run is contaminated'
+            throw 'Run-E2E.ps1: the staged mu-agent-desktop.exe hash changed during the run; the run is contaminated'
         }
 
         $ok = Write-Verdict -NoEffectWindowBootstrapUsed $noEffectInfo.BootstrapUsed

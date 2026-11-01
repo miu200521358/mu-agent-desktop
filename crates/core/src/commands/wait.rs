@@ -144,6 +144,7 @@ fn wait_for_window(
     let filter = WindowFilter {
         focused_only: false,
         app,
+        cloaked_window: None,
     };
     let mut last_error = None;
     let mut last_observed = None;
@@ -158,7 +159,7 @@ fn wait_for_window(
                 last_observed,
             );
         }
-        match adapter.list_windows(&filter, deadline) {
+        match adapter.list_windows_with_filter(&filter, deadline) {
             Ok(windows) => {
                 if let Some(win) = windows.iter().find(|w| w.title.contains(&title)) {
                     let elapsed = start.elapsed().as_millis();

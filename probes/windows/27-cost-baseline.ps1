@@ -36,7 +36,7 @@
 [CmdletBinding()]
 param(
     [ValidateSet('devbox', 'mergebase', 'ci')][string]$Label = 'devbox',
-    [string]$BinaryPath = 'target\release\agent-desktop.exe',
+    [string]$BinaryPath = 'target\release\mu-agent-desktop.exe',
     [string]$FixtureBinaryPath = 'tests\fixture-app-windows\build\AgentDeskFixture.exe'
 )
 

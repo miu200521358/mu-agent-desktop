@@ -126,6 +126,30 @@ pub(crate) fn is_cloaked(window: HWND) -> bool {
 }
 
 #[cfg(target_os = "windows")]
+/// Preserves the native HRESULT so a failed cloak read cannot be mistaken for an uncloaked window.
+pub(crate) fn read_cloak_raw(window: HWND) -> Result<u32, i32> {
+    let mut cloaked = 0_u32;
+    let hresult = unsafe {
+        windows_sys::Win32::Graphics::Dwm::DwmGetWindowAttribute(
+            window,
+            DWMWA_CLOAKED as u32,
+            (&mut cloaked as *mut u32).cast(),
+            core::mem::size_of::<u32>() as u32,
+        )
+    };
+    if hresult == 0 {
+        Ok(cloaked)
+    } else {
+        Err(hresult)
+    }
+}
+
+#[cfg(not(target_os = "windows"))]
+pub(crate) fn read_cloak_raw(_window: WindowHandle) -> Result<u32, i32> {
+    Err(0x8000_4001_u32 as i32)
+}
+
+#[cfg(target_os = "windows")]
 fn is_tool_window(window: HWND) -> bool {
     let ex_style = unsafe { GetWindowLongW(window, GWL_EXSTYLE) };
     (ex_style & WS_EX_TOOLWINDOW as i32) != 0

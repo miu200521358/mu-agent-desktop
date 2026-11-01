@@ -97,9 +97,9 @@ class StageTests(unittest.TestCase):
 
 class EnvelopeTests(unittest.TestCase):
     def test_cli_child_inherits_the_held_interaction_lease(self):
-        body = '''exec python3 -c 'import json, os; os.fstat(int(os.environ["AGENT_DESKTOP_INTERACTION_LEASE_FD"])); print(json.dumps({"ok": True, "data": {"inherited": True}}))' '''
+        body = '''exec python3 -c 'import json, os; os.fstat(int(os.environ["MU_AGENT_DESKTOP_INTERACTION_LEASE_FD"])); print(json.dumps({"ok": True, "data": {"inherited": True}}))' '''
         with tempfile.TemporaryFile() as lease, mock.patch.dict(
-                os.environ, {"AGENT_DESKTOP_INTERACTION_LEASE_FD": str(lease.fileno())}):
+                os.environ, {"MU_AGENT_DESKTOP_INTERACTION_LEASE_FD": str(lease.fileno())}):
             envelope = self.run_argv(body)
         self.assertTrue(envelope.ok, envelope.raw)
         self.assertEqual(envelope.data, {"inherited": True})

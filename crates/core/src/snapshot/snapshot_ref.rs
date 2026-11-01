@@ -53,10 +53,19 @@ pub fn run_from_ref_with_context(
         .clone();
 
     let deadline = crate::Deadline::after(timeout_ms)?;
-    let window = resolve_result_window(&entry, adapter, deadline)?;
-    let handle = adapter.resolve_element_strict(&entry, deadline)?;
+    let target = context.cloaked_window_target();
+    require_ref_target(&entry, target)?;
+    let window = resolve_result_window(&entry, adapter, deadline, target)?;
+    let filter = WindowFilter {
+        focused_only: false,
+        app: entry.source.source_app.clone(),
+        cloaked_window: target,
+    };
+    let handle = adapter.resolve_element_strict_with_filter(&entry, &filter, deadline)?;
 
     let observation_options = opts.with_ref_identity_bounds();
+    let request = ObservationRequest::snapshot(&observation_options, deadline);
+    let request = target.map_or(request, |target| request.with_cloaked_window_target(target));
     let raw_tree = crate::tree::renderer_accessibility::observe_tree(
         adapter,
         ObservationRoot::Element {
@@ -64,7 +73,7 @@ pub fn run_from_ref_with_context(
             entry: &entry,
             root_ref: Some(&local_root_ref),
         },
-        &ObservationRequest::snapshot(&observation_options, deadline).validate()?,
+        &request.validate()?,
     )?
     .into_accessibility_tree()?;
     let nodes_observed = count_nodes(&raw_tree);
@@ -137,7 +146,16 @@ fn resolve_result_window(
     entry: &crate::refs::RefEntry,
     adapter: &dyn PlatformAdapter,
     deadline: crate::Deadline,
+    target: Option<crate::CloakedWindowTarget>,
 ) -> Result<crate::WindowInfo, AppError> {
+    if let Some(target) = target
+        && entry.source.source_window_id.as_deref() != Some(target.window_id().as_str())
+    {
+        return Err(crate::AdapterError::stale_ref_because(
+            "root ref does not belong to the permitted window",
+        )
+        .into());
+    }
     let Some(window_id) = entry.source.source_window_id.as_deref() else {
         let instance = entry.process.process_instance.as_deref().ok_or_else(|| {
             AppError::Adapter(crate::AdapterError::stale_ref_because(
@@ -151,10 +169,11 @@ fn resolve_result_window(
         );
     };
     let candidates = adapter
-        .list_windows(
+        .list_windows_with_filter(
             &WindowFilter {
                 focused_only: false,
                 app: entry.source.source_app.clone(),
+                cloaked_window: target,
             },
             deadline,
         )?
@@ -170,6 +189,24 @@ fn resolve_result_window(
         .with_suggestion("Run 'snapshot' to refresh, then retry with an updated ref"),
         "Multiple windows matched the source window ID",
     )
+}
+
+fn require_ref_target(
+    entry: &crate::refs::RefEntry,
+    target: Option<crate::CloakedWindowTarget>,
+) -> Result<(), AppError> {
+    let Some(target) = target else {
+        return Ok(());
+    };
+    if entry.process.pid == target.pid
+        && entry.source.source_window_id.as_deref() == Some(target.window_id().as_str())
+    {
+        return Ok(());
+    }
+    Err(crate::AdapterError::stale_ref_because(
+        "root ref does not match the permitted window and process",
+    )
+    .into())
 }
 
 fn count_nodes(node: &crate::AccessibilityNode) -> usize {

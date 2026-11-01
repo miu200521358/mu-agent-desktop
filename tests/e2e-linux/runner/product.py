@@ -8,8 +8,8 @@ from pathlib import Path
 from runner.session import HARNESS_ROOT, Tier, _load_bounded_process
 
 BINARY_ENV = "AGENT_DESKTOP_E2E_BIN"
-LEASE_FD_ENV = "AGENT_DESKTOP_INTERACTION_LEASE_FD"
-DEFAULT_BINARY = HARNESS_ROOT.parent.parent / "target" / "release" / "agent-desktop"
+LEASE_FD_ENV = "MU_AGENT_DESKTOP_INTERACTION_LEASE_FD"
+DEFAULT_BINARY = HARNESS_ROOT.parent.parent / "target" / "release" / "mu-agent-desktop"
 MAX_CAPTURE = 1_048_576
 
 

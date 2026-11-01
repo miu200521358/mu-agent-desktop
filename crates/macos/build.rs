@@ -19,7 +19,9 @@ fn main() {
     let target = required_target();
     let deployment = deployment_target();
     let version = std::env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "unknown".into());
-    println!("cargo:rustc-env=AGENT_DESKTOP_MACOS_HELPER_BUILD_ID={version}:{target}:{deployment}");
+    println!(
+        "cargo:rustc-env=MU_AGENT_DESKTOP_MACOS_HELPER_BUILD_ID={version}:{target}:{deployment}"
+    );
     let Some(out_dir) = std::env::var_os("OUT_DIR").map(PathBuf::from) else {
         eprintln!("OUT_DIR is required");
         std::process::exit(1);

@@ -58,7 +58,7 @@ agent-desktop snapshot --app gnome-calculator -w "button:7"
     <tr><th>Variable</th><th>Meaning</th></tr>
   </thead>
   <tbody>
-    <tr><td><code>AGENT_DESKTOP_HOME</code></td><td>Relocates the <a href="#state-root">state root</a>. Must be an absolute path.</td></tr>
+    <tr><td><code>MU_AGENT_DESKTOP_HOME</code></td><td>Relocates the <a href="#state-root">state root</a>. Must be an absolute path.</td></tr>
     <tr><td><code>AGENT_DESKTOP_SESSION</code></td><td>Session id used when <code>--session</code> is not passed. <code>session start</code> prints the line that sets it. An empty value is <code>INVALID_ARGS</code>.</td></tr>
     <tr><td><code>AGENT_DESKTOP_AGENT_ID</code></td><td>Subagent id used when <code>--agent-id</code> is not passed.</td></tr>
     <tr><td><code>AGENT_DESKTOP_MACOS_HELPER_PATH</code></td><td>macOS only. Absolute path to the packaged <code>agent-desktop-macos-helper</code>. The npm launcher sets it.</td></tr>
@@ -66,11 +66,11 @@ agent-desktop snapshot --app gnome-calculator -w "button:7"
   </tbody>
 </table>
 
-An invalid value returns `INVALID_ARGS` with `not_delivered`, and nothing runs. In PowerShell, set a variable with `$env:AGENT_DESKTOP_HOME = "$env:TEMP\ad-scratch"`. On Linux the adapter also reads the desktop session's `DISPLAY`, `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`, and `DBUS_SESSION_BUS_ADDRESS`; see [Linux](/desktop/platforms/linux).
+An invalid value returns `INVALID_ARGS` with `not_delivered`, and nothing runs. In PowerShell, set a variable with `$env:MU_AGENT_DESKTOP_HOME = "$env:TEMP\ad-scratch"`. On Linux the adapter also reads the desktop session's `DISPLAY`, `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`, and `DBUS_SESSION_BUS_ADDRESS`; see [Linux](/desktop/platforms/linux).
 
 ## State root
 
-agent-desktop keeps its state under one directory: `.agent-desktop` in your home directory by default. `agent-desktop status` reports the resolved path as `state_root`. `AGENT_DESKTOP_HOME` replaces the default:
+mu-agent-desktop keeps its state under one directory: `.mu-agent-desktop` in your home directory by default. `mu-agent-desktop status` reports the resolved path as `state_root`. `MU_AGENT_DESKTOP_HOME` replaces the default:
 
 - It must be an absolute path. If it exists, it must be a directory you own and not a symlink.
 - It does not need to exist yet; it is created on first use with mode `0700` on macOS and Linux.
@@ -78,14 +78,14 @@ agent-desktop keeps its state under one directory: `.agent-desktop` in your home
 On macOS and Linux the state root must stay private. A root that is group-writable or readable by other users makes commands that write there fail with `INTERNAL`, "private file parent is accessible by group or other users". Run `chmod 700` on it, or let agent-desktop create it. A fresh root per run isolates refs:
 
 ```bash
-export AGENT_DESKTOP_HOME="$(mktemp -d)"   # absolute and private
+export MU_AGENT_DESKTOP_HOME="$(mktemp -d)"   # absolute and private
 agent-desktop status                       # data.state_root shows this path
 ```
 
 ### Layout
 
 ```text
-~/.agent-desktop/                     state root
+~/.mu-agent-desktop/                  state root
   latest_snapshot_id                  newest snapshot in the global namespace
   snapshots/
     s8f3k2p9/refmap.json              one refmap per snapshot
@@ -103,4 +103,4 @@ agent-desktop status                       # data.state_root shows this path
 - **Sessions.** `session start` creates `sessions/<id>/` with its own `snapshots/`, so one session's refs are invisible to another. `session gc` deletes ended sessions with their traces. See [Sessions](/desktop/sessions).
 - **Traces.** A tracing session writes one JSONL segment per process under `trace/`, plus `screens/` and `refmaps/` with `--screenshots`. See [Traces](/desktop/guides/traces).
 
-The cross-process interaction lock lives outside the state root (under `/tmp` on macOS and Linux), so every agent of one user shares it whatever their `AGENT_DESKTOP_HOME`. Files you name yourself, such as a `--trace` path or a screenshot path, are also outside it.
+The cross-process interaction lock lives outside the state root (under `/tmp` on macOS and Linux), so every mu-agent-desktop process of one user shares it whatever their `MU_AGENT_DESKTOP_HOME`. Files you name yourself, such as a `--trace` path or a screenshot path, are also outside it.

@@ -35,7 +35,7 @@ pub(crate) const PROTOCOL_GENERATION: &str = PROTOCOL_GENERATIONS[PROTOCOL_GENER
 /// The environment marker that turns an ordinary invocation of this binary
 /// into the overlay child. Read before argument parsing, so the child never
 /// reaches the CLI at all.
-pub(crate) const CHILD_MARKER: &str = "AGENT_DESKTOP_CURSOR_OVERLAY_CHILD";
+pub(crate) const CHILD_MARKER: &str = "MU_AGENT_DESKTOP_CURSOR_OVERLAY_CHILD";
 
 /// The argv token the child carries beside the marker. The environment block
 /// of another process is not readable from outside, so anything that has to
@@ -45,7 +45,7 @@ pub(crate) const CHILD_MARKER: &str = "AGENT_DESKTOP_CURSOR_OVERLAY_CHILD";
 /// Retiring a stale generation is not such a consumer: it derives that
 /// generation's pipe name and speaks to whoever answers it, which needs no
 /// command line at all.
-pub const CHILD_ARGV_FLAG: &str = "--cursor-overlay-child";
+pub const CHILD_ARGV_FLAG: &str = "--mu-agent-desktop-cursor-overlay-child";
 
 pub(crate) fn pipe_name(root: &Path, session_id: &str, agent_id: Option<&str>) -> String {
     pipe_name_for_generation(root, session_id, agent_id, PROTOCOL_GENERATION)
@@ -74,10 +74,10 @@ pub(crate) fn pipe_name_for_generation(
     let session = endpoint_hash(root, session_id, generation);
     match agent_id {
         Some(agent_id) => format!(
-            r"\\.\pipe\agent-desktop-cursor-{session:016x}-{:016x}",
+            r"\\.\pipe\mu-agent-desktop-cursor-{session:016x}-{:016x}",
             endpoint_hash(root, agent_id, AGENT_HASH_TAG)
         ),
-        None => format!(r"\\.\pipe\agent-desktop-cursor-{session:016x}"),
+        None => format!(r"\\.\pipe\mu-agent-desktop-cursor-{session:016x}"),
     }
 }
 
@@ -90,7 +90,7 @@ pub(crate) fn pipe_name_for_generation(
 /// whatever answers under its prefix.
 pub(crate) fn session_prefix(root: &Path, session_id: &str) -> String {
     format!(
-        "agent-desktop-cursor-{:016x}-",
+        "mu-agent-desktop-cursor-{:016x}-",
         endpoint_hash(root, session_id, PROTOCOL_GENERATION)
     )
 }

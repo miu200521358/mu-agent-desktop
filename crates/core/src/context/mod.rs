@@ -12,6 +12,7 @@ mod cursor;
 mod options;
 mod session_scope;
 mod wait_selector;
+mod window_target;
 
 use options::CommandOptions;
 use session_scope::SessionScope;

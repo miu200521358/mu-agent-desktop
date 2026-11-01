@@ -108,9 +108,9 @@ pub(crate) fn skip_unless_live_staging(reason: &str) -> bool {
 }
 
 pub(crate) fn run(scratch: &Scratch, args: &[&str]) -> serde_json::Value {
-    let output = Command::new(env!("CARGO_BIN_EXE_agent-desktop"))
+    let output = Command::new(env!("CARGO_BIN_EXE_mu-agent-desktop"))
         .args(args)
-        .env("AGENT_DESKTOP_HOME", &scratch.root)
+        .env("MU_AGENT_DESKTOP_HOME", &scratch.root)
         .output()
         .expect("the binary starts");
     serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
@@ -155,7 +155,7 @@ pub(crate) fn enable(scratch: &Scratch, session: &str) -> serde_json::Value {
 pub(crate) fn overlay_children(session: &str) -> Vec<u32> {
     let flag = agent_desktop_windows::CURSOR_OVERLAY_CHILD_FLAG;
     let script = format!(
-        "Get-CimInstance Win32_Process -Filter \"Name='agent-desktop.exe'\" | \
+        "Get-CimInstance Win32_Process -Filter \"Name='mu-agent-desktop.exe'\" | \
          Where-Object {{ $_.CommandLine -like '*{flag}*{session}*' }} | \
          ForEach-Object {{ $_.ProcessId }}"
     );

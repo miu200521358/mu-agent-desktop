@@ -21,6 +21,7 @@ fn everything() -> WindowFilter {
     WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     }
 }
 

@@ -108,6 +108,7 @@ pub(super) fn windows_of(bus: &SharedBus, pid: u32) -> Vec<WindowInfo> {
     let everything = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     list_windows(bus, &everything, deadline(10_000))
         .unwrap_or_default()

@@ -33,8 +33,8 @@ impl HomeGuard {
             use std::os::unix::fs::PermissionsExt;
             std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700)).unwrap();
         }
-        let previous = std::env::var_os("AGENT_DESKTOP_HOME");
-        unsafe { std::env::set_var("AGENT_DESKTOP_HOME", &path) };
+        let previous = std::env::var_os("MU_AGENT_DESKTOP_HOME");
+        unsafe { std::env::set_var("MU_AGENT_DESKTOP_HOME", &path) };
         Self {
             lock: Some(lock),
             previous,
@@ -50,8 +50,8 @@ impl HomeGuard {
 impl Drop for HomeGuard {
     fn drop(&mut self) {
         match self.previous.take() {
-            Some(previous) => unsafe { std::env::set_var("AGENT_DESKTOP_HOME", previous) },
-            None => unsafe { std::env::remove_var("AGENT_DESKTOP_HOME") },
+            Some(previous) => unsafe { std::env::set_var("MU_AGENT_DESKTOP_HOME", previous) },
+            None => unsafe { std::env::remove_var("MU_AGENT_DESKTOP_HOME") },
         }
         self.lock.take();
     }

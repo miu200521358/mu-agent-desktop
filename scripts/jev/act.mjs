@@ -219,9 +219,9 @@ const main = async (argv) => {
   const windowId = flag("window-id");
   const execute = argv.includes("--execute");
   const values = !argv.includes("--no-values");
-  const bin = flag("bin") ?? (existsSync(join(REPO, "target/release/agent-desktop"))
-    ? join(REPO, "target/release/agent-desktop")
-    : "agent-desktop");
+  const bin = flag("bin") ?? (existsSync(join(REPO, "target/release/mu-agent-desktop"))
+    ? join(REPO, "target/release/mu-agent-desktop")
+    : "mu-agent-desktop");
   const intent = argv
     .filter((a, i) => !a.startsWith("--") && !(argv[i - 1]?.startsWith("--") && !bools.has(argv[i - 1])))
     .join(" ");

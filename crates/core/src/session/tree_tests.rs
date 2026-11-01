@@ -14,7 +14,7 @@ fn options() -> StartSessionOptions {
 #[test]
 fn a_session_does_not_start_in_a_state_root_that_group_users_can_write() {
     let guard = HomeGuard::new();
-    let root = guard.path().join(".agent-desktop");
+    let root = guard.path().join(".mu-agent-desktop");
     std::fs::create_dir_all(&root).unwrap();
     std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o775)).unwrap();
     let error = start_session(options()).expect_err("a shared root is refused");

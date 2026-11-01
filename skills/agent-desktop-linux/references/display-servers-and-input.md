@@ -252,7 +252,7 @@ time to arm. The result reports the gesture, not the outcome: check the effect
 ## Interrupted input
 
 The X server keeps XTEST-pressed buttons when the client dies. The CLI journals
-what it holds under `$XDG_RUNTIME_DIR/agent-desktop-input`, and the next call on
+what it holds under `$XDG_RUNTIME_DIR/mu-agent-desktop-input`, and the next call on
 that display releases what a killed process left before it sends its own events.
 If a button seems stuck after you killed a command, run any input command
 with valid arguments, such as `agent-desktop --headed mouse-move --xy 640,400`,

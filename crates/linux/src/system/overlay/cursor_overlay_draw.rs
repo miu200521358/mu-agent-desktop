@@ -69,7 +69,7 @@ impl Overlay {
                 window,
                 AtomEnum::WM_NAME,
                 AtomEnum::STRING,
-                b"agent-desktop cursor overlay",
+                b"mu-agent-desktop cursor overlay",
             )
             .map_err(error)?
             .check()

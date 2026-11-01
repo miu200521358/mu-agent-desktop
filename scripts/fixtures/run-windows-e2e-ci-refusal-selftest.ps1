@@ -13,7 +13,7 @@
     guard actually fired. This self-test instead requires the binary to
     already exist (a prior CI step builds it) and asserts its
     LastWriteTime is byte-for-byte unchanged across the invocation, plus a
-    pid snapshot before/after proving no new agent-desktop.exe or
+    pid snapshot before/after proving no new mu-agent-desktop.exe or
     AgentDeskFixture.exe process was started. Run on the hosted
     windows-latest lane, never against a real desktop lease.
 #>
@@ -24,7 +24,7 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSCommandPath))
-$binaryPath = Join-Path $repoRoot 'target\release\agent-desktop.exe'
+$binaryPath = Join-Path $repoRoot 'target\release\mu-agent-desktop.exe'
 $runScript = Join-Path $repoRoot 'scripts\run-windows-e2e-ci.ps1'
 
 if (-not (Test-Path -LiteralPath $binaryPath)) {

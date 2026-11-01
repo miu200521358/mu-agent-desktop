@@ -136,8 +136,8 @@ fn connect_or_start(
     }
     let mut command = Command::new(std::env::current_exe()?);
     command
-        .env("AGENT_DESKTOP_INTERNAL_COMMAND_HOST", "1")
-        .env("AGENT_DESKTOP_INTERNAL_HOST_SOCKET", path)
+        .env("MU_AGENT_DESKTOP_INTERNAL_COMMAND_HOST", "1")
+        .env("MU_AGENT_DESKTOP_INTERNAL_HOST_SOCKET", path)
         .env_remove("AGENT_DESKTOP_AGENT_ID")
         .env_remove("AGENT_DESKTOP_SESSION")
         .process_group(0)

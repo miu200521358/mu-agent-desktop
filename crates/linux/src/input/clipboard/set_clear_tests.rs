@@ -88,7 +88,7 @@ impl World {
     }
 
     fn env_var(&self, name: &str) -> Option<String> {
-        (name == "AGENT_DESKTOP_HOME").then(|| self.root.display().to_string())
+        (name == "MU_AGENT_DESKTOP_HOME").then(|| self.root.display().to_string())
     }
 
     fn pid_file(&self) -> PathBuf {
@@ -114,10 +114,10 @@ impl World {
     }
 }
 
-const HANGS: &str = "echo $$ > \"$AGENT_DESKTOP_HOME/pid\"\nexec sleep 30";
+const HANGS: &str = "echo $$ > \"$MU_AGENT_DESKTOP_HOME/pid\"\nexec sleep 30";
 const EXITS: &str = "exit 3";
-const CLAIMS: &str = "echo $$ > \"$AGENT_DESKTOP_HOME/pid\"\n\
-d=\"$AGENT_DESKTOP_HOME/clipboard\"\n\
+const CLAIMS: &str = "echo $$ > \"$MU_AGENT_DESKTOP_HOME/pid\"\n\
+d=\"$MU_AGENT_DESKTOP_HOME/clipboard\"\n\
 n=\"$AGENT_DESKTOP_SELECTION_NONCE\"\n\
 printf '{\"pid\":%s,\"start_ticks\":1,\"display\":\"_77\",\"window\":4242,\"nonce\":\"%s\"}' $$ \"$n\" > \"$d/owner-_77-$n.json\"\n\
 exec sleep 30";

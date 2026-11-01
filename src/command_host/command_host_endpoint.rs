@@ -28,7 +28,9 @@ pub(super) fn path(identity: &str) -> Result<PathBuf, AppError> {
             ));
         }
     }
-    let directory = parent.join(format!("agent-desktop-host-{}", unsafe { libc::geteuid() }));
+    let directory = parent.join(format!("mu-agent-desktop-host-{}", unsafe {
+        libc::geteuid()
+    }));
     match std::fs::DirBuilder::new().mode(0o700).create(&directory) {
         Ok(()) => {}
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}

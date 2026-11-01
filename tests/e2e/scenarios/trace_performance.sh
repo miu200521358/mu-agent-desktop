@@ -60,7 +60,7 @@ for event in data.get("data",{}).get("events",[]):
         items.extend(f"{key}={event[key]}" for key in keys if key in event)
 print(",".join(items) or "none")
 ' 2>/dev/null)"
-trace_dir="${HOME}/.agent-desktop/sessions/${trace_session}/trace"
+trace_dir="${HOME}/.mu-agent-desktop/sessions/${trace_session}/trace"
 png_magic=0
 if [ -d "$trace_dir/screens" ]; then
     first_png="$(find "$trace_dir/screens" -name '*.png' -print -quit 2>/dev/null)"

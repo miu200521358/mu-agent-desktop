@@ -32,7 +32,7 @@ observe-then-act ordering must wait for the snapshot result before dispatching
 the action.
 
 Desktop mutations take a process-independent lock: on macOS and Linux an
-advisory lock at `/tmp/agent-desktop-<uid>/interaction.lock`, on Windows a
+advisory lock at `/tmp/mu-agent-desktop-<uid>/interaction.lock`, on Windows a
 token-derived lock file. CLI and FFI builds therefore serialize mutations across
 threads, processes and different HOME values for the same user. The lock is
 command-scoped, not transaction-scoped: another actor may change the UI between

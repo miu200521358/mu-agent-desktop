@@ -91,7 +91,7 @@ namespace AgentDesktopClosureProbe {
 Add-ProbeInlineCSharp -Source $traySource -AssemblyLeaf 'AgentDesktopClosureProbe'
 
 function Get-ReleaseBinary {
-    $candidate = Join-Path (Split-Path -Parent (Split-Path -Parent (Get-ProbeRoot))) 'target/release/agent-desktop.exe'
+    $candidate = Join-Path (Split-Path -Parent (Split-Path -Parent (Get-ProbeRoot))) 'target/release/mu-agent-desktop.exe'
     if (-not (Test-Path -LiteralPath $candidate)) {
         throw ('PROBE-HARNESS: the release binary is required for the leaf classification and is absent at ' + $candidate)
     }

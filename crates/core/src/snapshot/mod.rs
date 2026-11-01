@@ -13,6 +13,8 @@ use crate::{
 };
 use serde_json::json;
 
+mod window_target;
+
 #[derive(Clone)]
 pub struct SnapshotResult {
     pub tree: AccessibilityNode,
@@ -37,9 +39,31 @@ pub fn build(
     window_id: Option<&str>,
     deadline: crate::Deadline,
 ) -> Result<SnapshotResult, AppError> {
-    let windows = surface_windows(adapter, app_name, window_id, opts.surface, deadline)?;
+    build_with_cloaked_window_target(adapter, opts, app_name, window_id, None, deadline)
+}
+
+fn build_with_cloaked_window_target(
+    adapter: &dyn PlatformAdapter,
+    opts: &TreeOptions,
+    app_name: Option<&str>,
+    window_id: Option<&str>,
+    target: Option<crate::CloakedWindowTarget>,
+    deadline: crate::Deadline,
+) -> Result<SnapshotResult, AppError> {
+    let windows = window_target::surface_windows(
+        adapter,
+        app_name,
+        window_id,
+        opts.surface,
+        target,
+        deadline,
+    )?;
     let observation_options = opts.with_ref_identity_bounds();
-    let request = ObservationRequest::snapshot(&observation_options, deadline).validate()?;
+    let request = with_cloaked_target(
+        ObservationRequest::snapshot(&observation_options, deadline),
+        target,
+    )
+    .validate()?;
     let (window, observed) = first_surface_owner(windows, |window| {
         crate::tree::renderer_accessibility::observe_tree(
             adapter,
@@ -82,6 +106,13 @@ pub fn build(
         complete,
         nodes_observed,
     })
+}
+
+fn with_cloaked_target(
+    request: ObservationRequest,
+    target: Option<crate::CloakedWindowTarget>,
+) -> ObservationRequest {
+    target.map_or(request, |target| request.with_cloaked_window_target(target))
 }
 
 /// Resolves the window that identifies the process to observe. An app-level
@@ -149,21 +180,7 @@ pub(crate) fn surface_windows(
     surface: crate::SnapshotSurface,
     deadline: crate::Deadline,
 ) -> Result<Vec<WindowInfo>, AppError> {
-    use crate::SnapshotSurface::{Alert, Popover, Sheet};
-    if window_id.is_none() && matches!(surface, Sheet | Popover | Alert) {
-        let mut windows = match app_name {
-            Some(_) => windows_for_app(adapter, app_name, deadline)?,
-            None => frontmost_process_windows(adapter, surface, deadline)?,
-        };
-        windows.retain(|window| window.state.accessible);
-        let windows = crate::system::window_lookup::surface_owner_order(windows);
-        if !windows.is_empty() {
-            return Ok(windows);
-        }
-    }
-    Ok(vec![resolve_window_for_surface(
-        adapter, app_name, window_id, surface, deadline,
-    )?])
+    window_target::surface_windows(adapter, app_name, window_id, surface, None, deadline)
 }
 
 fn frontmost_process_windows(
@@ -207,8 +224,9 @@ fn windows_for_app(
     let filter = WindowFilter {
         focused_only: app_name.is_none(),
         app: app_name.map(str::to_string),
+        cloaked_window: None,
     };
-    Ok(adapter.list_windows(&filter, deadline)?)
+    Ok(adapter.list_windows_with_filter(&filter, deadline)?)
 }
 
 pub(crate) fn resolve_window(
@@ -220,9 +238,10 @@ pub(crate) fn resolve_window(
     let filter = WindowFilter {
         focused_only: app_name.is_none() && window_id.is_none(),
         app: app_name.map(str::to_string),
+        cloaked_window: None,
     };
 
-    let windows = adapter.list_windows(&filter, deadline)?;
+    let windows = adapter.list_windows_with_filter(&filter, deadline)?;
 
     if let Some(wid) = window_id {
         windows.into_iter().find(|w| w.id == wid).ok_or_else(|| {
@@ -306,11 +325,12 @@ pub fn run_with_context(
     context: &CommandContext,
     timeout_ms: u64,
 ) -> Result<SnapshotResult, AppError> {
-    let mut result = build(
+    let mut result = build_with_cloaked_window_target(
         adapter,
         opts,
         target.app_name,
         target.window_id,
+        context.cloaked_window_target(),
         crate::Deadline::after(timeout_ms)?,
     )?;
     let store = RefStore::for_session(context.session_id())?;

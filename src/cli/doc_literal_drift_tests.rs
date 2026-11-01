@@ -24,6 +24,7 @@ const FFI_HEADER: &str = include_str!("../../crates/ffi/include/agent_desktop.h"
 const README: &str = include_str!("../../README.md");
 const AGENTS_MD: &str = include_str!("../../AGENTS.md");
 const HELD_INPUT_COMMANDS: &[&str] = &["key-down", "key-up", "mouse-down", "mouse-up"];
+const MACOS_UNAVAILABLE_COMMANDS: &[&str] = &["window-diagnostic"];
 
 fn quoted_values_after<'a>(text: &'a str, marker: &str) -> Vec<&'a str> {
     text.match_indices(marker)
@@ -96,11 +97,16 @@ fn documented_command_counts_match_the_cli() {
         .filter(|name| name.as_str() != "help")
         .count();
     let operational = total - HELD_INPUT_COMMANDS.len();
+    let operational_on_macos = operational - MACOS_UNAVAILABLE_COMMANDS.len();
     assert!(
         README.contains(&format!(
-            "{total} command names, {operational} operational commands"
+            "{total} command names, {operational} operational on at least one platform"
         )),
-        "README.md must state {total} command names and {operational} operational commands"
+        "README.md must state {total} command names and {operational} operational on at least one platform"
+    );
+    assert!(
+        README.contains(&format!("{operational_on_macos} operational on macOS")),
+        "README.md must state {operational_on_macos} operational on macOS"
     );
     assert!(
         AGENTS_MD.contains(&format!("{total} commands spanning")),
@@ -108,8 +114,14 @@ fn documented_command_counts_match_the_cli() {
     );
     assert!(
         AGENTS_MD.contains(&format!(
-            "{operational} of the {total} command names are operational"
+            "{operational} of the {total} command names are operational on at least one platform"
         )),
-        "AGENTS.md must state {operational} of the {total} command names are operational"
+        "AGENTS.md must state {operational} of the {total} command names are operational on at least one platform"
+    );
+    assert!(
+        AGENTS_MD.contains(&format!(
+            "{operational_on_macos} of the {total} command names are operational on macOS"
+        )),
+        "AGENTS.md must state {operational_on_macos} of the {total} command names are operational on macOS"
     );
 }

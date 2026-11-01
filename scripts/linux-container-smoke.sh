@@ -27,7 +27,7 @@ run() { docker exec -u me "$NAME" bash -c ". /tmp/session.env && . /usr/local/bi
 build() {
     docker run --name "$NAME-build" -v "$ROOT":/src:ro -v ad-cargo:/usr/local/cargo/registry -v ad-smoke-target:/target \
         -e CARGO_TARGET_DIR=/target -w /src "$RUST_IMAGE" cargo build --locked --release -p agent-desktop -p agent-desktop-linux --bins || return 1
-    docker cp "$NAME-build:/target/release/agent-desktop" "$WORK/" &&
+    docker cp "$NAME-build:/target/release/mu-agent-desktop" "$WORK/" &&
         docker cp "$NAME-build:/target/release/agent-desktop-linux-clipboard-owner" "$WORK/"
 }
 

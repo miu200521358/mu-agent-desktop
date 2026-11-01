@@ -3,13 +3,13 @@ use clap::{CommandFactory, Parser, error::ErrorKind};
 
 #[test]
 fn standard_version_flag_reports_the_package_version() {
-    let error = Cli::try_parse_from(["agent-desktop", "--version"])
+    let error = Cli::try_parse_from(["mu-agent-desktop", "--version"])
         .expect_err("--version should use clap's display-version path");
 
     assert_eq!(error.kind(), ErrorKind::DisplayVersion);
     assert_eq!(
         error.to_string().trim(),
-        format!("agent-desktop {}", env!("CARGO_PKG_VERSION"))
+        format!("mu-agent-desktop {}", env!("CARGO_PKG_VERSION"))
     );
 }
 
@@ -125,13 +125,22 @@ fn ref_commands_reject_the_removed_snapshot_flag() {
 }
 
 #[test]
-fn ci_compares_the_release_binary_to_the_workspace_version() {
+fn ci_and_release_compare_binary_version_flags_to_the_package_version() {
     let workflow = include_str!("../../.github/workflows/ci.yml");
 
     assert!(workflow.contains("PACKAGE_ID=$(cargo pkgid -p agent-desktop)"));
     assert!(workflow.contains("EXPECTED_VERSION=${PACKAGE_ID##*@}"));
-    assert!(workflow.contains("EXPECTED_OUTPUT=\"agent-desktop $EXPECTED_VERSION\""));
+    assert!(workflow.contains("EXPECTED_OUTPUT=\"mu-agent-desktop $EXPECTED_VERSION\""));
     assert!(workflow.contains("[ \"$ACTUAL_OUTPUT\" != \"$EXPECTED_OUTPUT\" ]"));
+
+    let release_workflow = include_str!("../../.github/workflows/release.yml");
+    assert!(release_workflow.contains("EXPECTED_OUTPUT=\"mu-agent-desktop $EXPECTED_VERSION\""));
+    assert!(release_workflow.contains(
+        "ACTUAL_OUTPUT=$(target/${{ matrix.target }}/release/mu-agent-desktop --version)"
+    ));
+    assert!(
+        release_workflow.contains("$expectedOutput = \"mu-agent-desktop $env:EXPECTED_VERSION\"")
+    );
 }
 
 #[test]
@@ -150,7 +159,7 @@ fn ci_windows_lane_gates_the_full_package_surface() {
         "the census redaction guard lives in an example, which a --lib run skips"
     );
     assert!(workflow.contains("expected exactly 2 windows cfg shims"));
-    assert!(workflow.contains("Get-Item target/release/agent-desktop.exe"));
+    assert!(workflow.contains("Get-Item target/release/mu-agent-desktop.exe"));
     assert!(workflow.contains("ORIGINAL_USERPROFILE=$env:USERPROFILE"));
     assert!(workflow.contains("Guard profile isolation"));
     assert!(workflow.contains("FAIL: HOME is not under RUNNER_TEMP"));

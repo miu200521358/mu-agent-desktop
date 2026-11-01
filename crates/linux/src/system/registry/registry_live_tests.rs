@@ -19,6 +19,7 @@ fn windows_of(bus: &SharedBus, app: &str) -> Vec<WindowInfo> {
     let filter = WindowFilter {
         focused_only: false,
         app: Some(app.to_owned()),
+        cloaked_window: None,
     };
     list_windows(bus, &filter, deadline(10_000)).unwrap_or_default()
 }
@@ -80,6 +81,7 @@ fn registry_live_lists_apps_and_windows_and_keeps_a_stopped_app() {
         &WindowFilter {
             focused_only: true,
             app: None,
+            cloaked_window: None,
         },
         deadline(10_000),
     )

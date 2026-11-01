@@ -3,7 +3,7 @@ mod tests {
     use std::process::Command;
 
     fn run(args: &[&str]) -> serde_json::Value {
-        let output = Command::new(env!("CARGO_BIN_EXE_agent-desktop"))
+        let output = Command::new(env!("CARGO_BIN_EXE_mu-agent-desktop"))
             .args(args)
             .output()
             .expect("failed to run agent-desktop");

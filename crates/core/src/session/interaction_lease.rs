@@ -17,7 +17,7 @@ pub struct InteractionLease {
 }
 
 #[cfg(unix)]
-pub const INTERACTION_LEASE_FD_ENV: &str = "AGENT_DESKTOP_INTERACTION_LEASE_FD";
+pub const INTERACTION_LEASE_FD_ENV: &str = "MU_AGENT_DESKTOP_INTERACTION_LEASE_FD";
 
 impl InteractionLease {
     pub fn guarded(
@@ -129,7 +129,7 @@ pub fn adopt_inherited_unix_interaction_lease(
 #[cfg(unix)]
 fn interaction_lock_path_at(root: &std::path::Path) -> Result<PathBuf, AdapterError> {
     let uid = unsafe { libc::geteuid() };
-    let directory = root.join(format!("agent-desktop-{uid}"));
+    let directory = root.join(format!("mu-agent-desktop-{uid}"));
     ensure_unix_runtime_directory(&directory, uid)?;
     Ok(directory.join("interaction.lock"))
 }
@@ -157,7 +157,7 @@ fn adopt_inherited_unix_interaction_lease_at(
 ) -> Result<InteractionLease, AdapterError> {
     let process_guard = crate::session::process_lease_guard::ProcessLeaseGuard::acquire(deadline)?;
     let uid = unsafe { libc::geteuid() };
-    let directory = root.join(format!("agent-desktop-{uid}"));
+    let directory = root.join(format!("mu-agent-desktop-{uid}"));
     validate_unix_runtime_directory(&directory, uid)?;
     let path = directory.join("interaction.lock");
     let lock = FileLock::adopt_inherited(

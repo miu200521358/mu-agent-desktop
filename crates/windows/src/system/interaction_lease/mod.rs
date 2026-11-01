@@ -38,7 +38,7 @@ use windows_sys::Win32::System::Threading::GetCurrentProcess;
 /// variable: this one is the product's own protocol, so no non-agent child
 /// ever inherits it by accident, and the harness's own handoff stays
 /// independently testable from the product's adoption path.
-pub(crate) const INTERACTION_LEASE_HANDLE_ENV: &str = "AGENT_DESKTOP_INTERACTION_LEASE_HANDLE";
+pub(crate) const INTERACTION_LEASE_HANDLE_ENV: &str = "MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE";
 
 const LOCK_FILE_NAME: &str = "interaction.lock";
 const LEASE_PURPOSE: &str = "desktop interaction lease";

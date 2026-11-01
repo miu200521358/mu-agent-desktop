@@ -6,7 +6,7 @@ use agent_desktop_core::{
 #[cfg(target_os = "windows")]
 use super::frame_identity;
 use super::listing_retry::retry_transient_window_race;
-use super::window_enum::{EnumeratedWindow, enumerate_top_level};
+use super::window_enum::{EnumeratedWindow, enumerate_top_level, read_cloak_raw};
 use super::window_identity::WindowIdentityEvidence;
 use crate::system::process_identity;
 
@@ -155,12 +155,30 @@ fn list_windows_live_once(
             }
         }
         seen += 1;
-        if !passes_filter(&window) {
+        let target = filter.cloaked_window;
+        if target.is_none() && !passes_filter(&window) {
+            return true;
+        }
+        if target.is_some_and(|target| window.handle as usize as u64 != target.hwnd) {
             return true;
         }
         let Some((pid, token, app)) = identity_facts(window.handle) else {
             return true;
         };
+        if let Some(target) = target {
+            let evidence = super::cloaked_target::TargetWindowEvidence {
+                hwnd: window.handle as usize as u64,
+                pid: pid.get(),
+                process_instance: token.clone(),
+                visible: window.visible,
+                nonzero: !window.is_zero_sized(),
+                tool: window.tool,
+                cloak_raw: read_cloak_raw(window.handle),
+            };
+            if !super::cloaked_target::eligible(target, &evidence, None) {
+                return true;
+            }
+        }
         if let Some(filter_name) = app_filter {
             if !app_name_matches(&app, filter_name) {
                 return true;

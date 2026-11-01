@@ -147,7 +147,7 @@ impl DebugCapture {
             }
             data["debug"] = metadata;
         } else {
-            eprintln!("agent-desktop debug: {metadata}");
+            eprintln!("mu-agent-desktop debug: {metadata}");
         }
     }
 }

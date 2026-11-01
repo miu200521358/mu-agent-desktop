@@ -105,6 +105,12 @@ fn a_semantic_toggle_with_no_bounds_on_a_known_on_screen_node_passes_visible_and
 }
 
 #[test]
+fn semantic_actions_still_fail_for_an_explicitly_offscreen_target() {
+    let status = status_of(Action::Toggle, false, Some(true), None, TOGGLE, "visible");
+    assert_eq!(status, Some(ActionabilityStatus::Fail));
+}
+
+#[test]
 fn a_toggle_with_bounds_still_runs_the_stability_check() {
     let status = status_of(
         Action::Toggle,

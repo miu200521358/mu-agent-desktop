@@ -12,9 +12,10 @@ pub(crate) fn find_window_for_process(
     let filter = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     let same_pid: Vec<_> = adapter
-        .list_windows(&filter, deadline)?
+        .list_windows_with_filter(&filter, deadline)?
         .into_iter()
         .filter(|window| window.pid == process.pid)
         .collect();

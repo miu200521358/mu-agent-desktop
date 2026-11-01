@@ -1,6 +1,6 @@
 # Linux live end-to-end harness
 
-Drives the built `agent-desktop` binary against real GNOME and Qt applications inside private, throwaway desktop sessions. Every effect is verified by an independent read (raw AT-SPI, X11, GSettings, process, pixel, clipboard or D-Bus), never by the command's own `ok:true`.
+Drives the built `mu-agent-desktop` binary against real GNOME and Qt applications inside private, throwaway desktop sessions. Every effect is verified by an independent read (raw AT-SPI, X11, GSettings, process, pixel, clipboard or D-Bus), never by the command's own `ok:true`.
 
 ## Run
 
@@ -12,7 +12,7 @@ bash tests/e2e-linux/run.sh --tier x11-openbox
 
 Each run builds (`cargo build --locked --release`) into its own suite's temporary Cargo target, stages both executables in `<suite>/bin/`, and records their SHA256s in adjacent `.sha256` files and in the startup `image:` lines. It then removes the build intermediates. Every leg uses that pinned pair. A staged hash mismatch fails the run, and other worktrees' builds cannot replace either image. An externally supplied `AGENT_DESKTOP_E2E_BIN` (or `AGENT_DESKTOP_E2E_BIN_SRC`) skips the build and freezes that image and its adjacent helper before the interaction lease is taken.
 
-Omit `--tier` to run all tiers sequentially. Set `AGENT_DESKTOP_E2E_SUITE` to a fresh directory to choose the evidence location. The default is a fresh directory under `$AGENT_DESKTOP_SESSION_BASE` when nonempty, otherwise `$XDG_RUNTIME_DIR/agent-desktop-sessions` when `XDG_RUNTIME_DIR` is nonempty, otherwise `/tmp/agent-desktop-sessions-<uid>` with the numeric user ID. The base is created with mode 0700. The runner starts its own private sessions and takes the interaction lease.
+Omit `--tier` to run all tiers sequentially. Set `AGENT_DESKTOP_E2E_SUITE` to a fresh directory to choose the evidence location. The default is a fresh directory under `$AGENT_DESKTOP_SESSION_BASE` when nonempty, otherwise `$XDG_RUNTIME_DIR/mu-agent-desktop-sessions` when `XDG_RUNTIME_DIR` is nonempty, otherwise `/tmp/mu-agent-desktop-sessions-<uid>` with the numeric user ID. The base is created with mode 0700. The runner starts its own private sessions and takes the interaction lease.
 
 Exit codes: `0` every leg passed or asserted its refusal; `1` any other outcome (see Outcomes); `2` the gate refused to start (missing prerequisite, unknown leg, leg not registered for the tier, staging failure, or the interaction lease is already held). Nothing ran on exit 2.
 
@@ -144,7 +144,7 @@ Rerun a failed leg at most once to distinguish a deterministic product defect fr
 bash tests/e2e-linux/run.sh --tier x11-openbox --leg state.text_editor_semantic_type --lying-actions
 ```
 
-The prerequisite gate still requires an existing release binary path (`AGENT_DESKTOP_E2E_BIN`, `AGENT_DESKTOP_E2E_BIN_SRC`, or `target/release/agent-desktop`); the fake replaces it after the gate passes. The negative control does not prove cleanup; that is the cancellation check below.
+The prerequisite gate still requires an existing release binary path (`AGENT_DESKTOP_E2E_BIN`, `AGENT_DESKTOP_E2E_BIN_SRC`, or `target/release/mu-agent-desktop`); the fake replaces it after the gate passes. The negative control does not prove cleanup; that is the cancellation check below.
 
 ### Cancellation check
 
@@ -154,8 +154,8 @@ This bounded check waits for the receipt rather than guessing a PID or sleeping 
 
 ```sh
 export CARGO_INCREMENTAL=0
-base=${AGENT_DESKTOP_SESSION_BASE:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/agent-desktop-sessions}}
-base=${base:-/tmp/agent-desktop-sessions-$(id -u)}
+base=${AGENT_DESKTOP_SESSION_BASE:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/mu-agent-desktop-sessions}}
+base=${base:-/tmp/mu-agent-desktop-sessions-$(id -u)}
 umask 077
 mkdir -p "$base"
 suite=$(mktemp -d "$base/e2e-cancel.XXXXXX")
@@ -184,7 +184,7 @@ python3 -I -m unittest discover -s tests/e2e -p 'test_*.py'
 
 ## KDE manual matrix
 
-The runner hosts GNOME sessions only. The same surface is walked by hand on a real KDE Plasma desktop. The table is an acceptance checklist, not copy/paste shell commands: choose concrete apps and refs and record the setup. Use the `agent-desktop` executable prefix for every product command. Pointer, drag and notification mutation commands require global `--headed`; `dismiss-notification` and `notification-action` also require a fingerprint from the same listing (`--expected-app` or `--expected-title`). The `_NET_ACTIVE_WINDOW` oracle applies to X11 only; Wayland uses independent raw window ACTIVE/focus reads and exact documented refusal outcomes.
+The runner hosts GNOME sessions only. The same surface is walked by hand on a real KDE Plasma desktop. The table is an acceptance checklist, not copy/paste shell commands: choose concrete apps and refs and record the setup. Use the `mu-agent-desktop` executable prefix for every product command. Pointer, drag and notification mutation commands require global `--headed`; `dismiss-notification` and `notification-action` also require a fingerprint from the same listing (`--expected-app` or `--expected-title`). The `_NET_ACTIVE_WINDOW` oracle applies to X11 only; Wayland uses independent raw window ACTIVE/focus reads and exact documented refusal outcomes.
 
 One row per cell; a cell that cannot run on the session is written down with its reason, never left blank.
 

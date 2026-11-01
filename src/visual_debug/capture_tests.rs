@@ -135,7 +135,7 @@ fn saved_snapshot_and_click_capture_use_exact_source_evidence() {
         }
         let output = std::process::Command::new(std::env::current_exe().unwrap())
             .args(["--exact", "visual_debug::capture::tests::saved_snapshot_and_click_capture_use_exact_source_evidence", "--nocapture"])
-            .env("VISUAL_DEBUG_CAPTURE_TEST_CHILD", "1").env("AGENT_DESKTOP_HOME", &home).output().unwrap();
+            .env("VISUAL_DEBUG_CAPTURE_TEST_CHILD", "1").env("MU_AGENT_DESKTOP_HOME", &home).output().unwrap();
         std::fs::remove_dir_all(home).unwrap();
         assert!(
             output.status.success(),

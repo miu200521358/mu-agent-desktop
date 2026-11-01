@@ -82,7 +82,7 @@ shape when none are, and a top-level `ClearAllButton`.
 presentation-only cursor in a click-through, topmost, non-activating window.
 
 ```powershell
-$env:AGENT_DESKTOP_HOME = "$env:TEMP\ad-scratch"
+$env:MU_AGENT_DESKTOP_HOME = "$env:TEMP\ad-scratch"
 $start = agent-desktop session start --cursor | ConvertFrom-Json
 $env:AGENT_DESKTOP_SESSION = $start.data.session_id
 agent-desktop cursor-overlay enable --label "Opening menu" --accent "#FF3B7B"

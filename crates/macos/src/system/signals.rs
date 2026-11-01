@@ -37,6 +37,7 @@ pub(crate) fn capture_signal_baseline_impl(
             &WindowFilter {
                 focused_only: false,
                 app: filter.app.clone(),
+                cloaked_window: None,
             },
             deadline,
         )?

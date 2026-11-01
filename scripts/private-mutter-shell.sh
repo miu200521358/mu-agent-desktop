@@ -42,8 +42,8 @@ stop_all() {
 trap stop_all EXIT
 
 display=
-base=${AGENT_DESKTOP_SESSION_BASE:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/agent-desktop-sessions}}
-base=${base:-/tmp/agent-desktop-sessions-$(id -u)}
+base=${AGENT_DESKTOP_SESSION_BASE:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/mu-agent-desktop-sessions}}
+base=${base:-/tmp/mu-agent-desktop-sessions-$(id -u)}
 exec 9> "$base/display.lock"
 flock 9
 for candidate in $(seq 200 249); do

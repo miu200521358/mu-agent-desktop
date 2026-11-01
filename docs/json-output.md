@@ -127,6 +127,55 @@ Earlier output synthesized a display name, falling back to `value` or
 `name` as always present must tolerate its absence and apply their own fallback
 to `role` or `value`.
 
+## Windows window diagnosis
+
+`window-diagnostic` is a read-only Windows command. It requires a positive PID;
+`app` and `window_id` are optional selectors and both must match when supplied.
+It does not issue refs or persist refmaps.
+
+```json
+{
+  "version": "2.5",
+  "ok": true,
+  "command": "window-diagnostic",
+  "data": {
+    "query": { "pid": 1234, "app": null, "window_id": null },
+    "windows": [
+      {
+        "identity": {
+          "id": "w-80432",
+          "app": "Editor.exe",
+          "pid": 1234,
+          "process_instance": "windows-proc-v1:134000000:1234567"
+        },
+        "state": {
+          "visible": true,
+          "iconic": false,
+          "tool": false,
+          "bounds": { "x": 80.0, "y": 40.0, "width": 900.0, "height": 700.0 }
+        },
+        "cloak": { "known": true, "raw": 2, "hresult": null },
+        "virtual_desktop": {
+          "is_current": false,
+          "is_current_hresult": null,
+          "desktop_id": "00000000-0000-0000-0000-000000000001",
+          "desktop_id_hresult": null
+        },
+        "normal_inventory": { "admitted": false, "reasons": ["cloaked"] }
+      }
+    ]
+  }
+}
+```
+
+`identity.process_instance: null` means the process generation could not be
+read. `cloak.known` is false for unknown raw bits or a failed DWM read; the
+raw value is retained when present, and the HRESULT is retained on failure.
+Each virtual-desktop result is independently nullable and preserves its
+HRESULT, so one COM call can fail while the other succeeds. `normal_inventory`
+explains the regular window-inventory filters; diagnostic fields never make a
+window actionable by themselves.
+
 ## Error codes
 
 | Code | Meaning |

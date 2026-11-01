@@ -55,10 +55,10 @@ Invoke-SelfTest 'Exit-IsolatedEnvironment refuses a suite root owned by a differ
     try {
         $env1 = Enter-IsolatedEnvironment -Label 'ownercheck'
         $root = $env1.SuiteRoot
-        Set-Content -LiteralPath (Join-Path $root '.agent-desktop-e2e-root') -Value '999999999' -Encoding ASCII -NoNewline
+        Set-Content -LiteralPath (Join-Path $root '.mu-agent-desktop-e2e-root') -Value '999999999' -Encoding ASCII -NoNewline
         Exit-IsolatedEnvironment -WarningAction SilentlyContinue
         Assert-True (Test-Path -LiteralPath $root) 'a suite root with a foreign ownership marker must not be removed'
-        Set-Content -LiteralPath (Join-Path $root '.agent-desktop-e2e-root') -Value $PID -Encoding ASCII -NoNewline
+        Set-Content -LiteralPath (Join-Path $root '.mu-agent-desktop-e2e-root') -Value $PID -Encoding ASCII -NoNewline
         $removed = Remove-ItemRecoverable -Path $root
         Assert-True $removed.Equals($true) 'manual cleanup of the test artifact should succeed'
     } finally {
@@ -96,9 +96,9 @@ Invoke-SelfTest 'a timed-out bounded process leaves no surviving descendant' {
 Invoke-SelfTest 'Invoke-Guarded strips the lease handle and the child holds nothing after release' {
     $lease = Enter-DesktopLease -TimeoutSeconds 10
     try {
-        $checkScript = 'if ($env:AGENT_DESKTOP_INTERACTION_LEASE_HANDLE) { "present" } else { "absent" }'
+        $checkScript = 'if ($env:MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE) { "present" } else { "absent" }'
         $child = Invoke-Guarded -FilePath 'powershell.exe' -ArgumentList @('-NoProfile', '-Command', $checkScript) -TimeoutSeconds 10
-        Assert-True ($child.StdOut.Trim() -eq 'absent') "Invoke-Guarded must strip AGENT_DESKTOP_INTERACTION_LEASE_HANDLE - saw '$($child.StdOut.Trim())'"
+        Assert-True ($child.StdOut.Trim() -eq 'absent') "Invoke-Guarded must strip MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE - saw '$($child.StdOut.Trim())'"
     } finally {
         Exit-DesktopLease
     }
@@ -131,7 +131,7 @@ Invoke-SelfTest 'Invoke-GuardedAgent clears the inherit flag after the spawn ret
 Invoke-SelfTest 'a tampered staged binary is caught by hash re-verification' {
     $stageDir = New-ScratchDirectory 'stage'
     try {
-        $staged = Copy-ImmutableArtifact -Source $AgentDesktopBinary -Destination (Join-Path $stageDir 'agent-desktop.exe')
+        $staged = Copy-ImmutableArtifact -Source $AgentDesktopBinary -Destination (Join-Path $stageDir 'mu-agent-desktop.exe')
         Assert-True (Test-ImmutableArtifactHash -Path $staged.Path -ExpectedSha256 $staged.Sha256) 'an untampered staged binary must verify clean'
 
         $forged = 'not-a-real-hash-0000000000000000000000000000000000000000000000000000'

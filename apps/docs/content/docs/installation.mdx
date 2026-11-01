@@ -63,7 +63,7 @@ You need the Rust toolchain pinned in `rust-toolchain.toml` (1.89.0), which `rus
 
 ```bash
 git clone https://github.com/vercel-labs/agent-desktop && cd agent-desktop
-cargo build --release -p agent-desktop      # writes target/release/agent-desktop
+cargo build --release -p agent-desktop      # writes target/release/mu-agent-desktop
 ```
 
 Build the helper for your platform and keep it beside the CLI. A platform crate compiles only on its own OS:
@@ -108,7 +108,7 @@ agent-desktop status
     "ref_count": null,
     "session_id": null,
     "snapshot_id": null,
-    "state_root": "/home/user/.agent-desktop",
+    "state_root": "/home/user/.mu-agent-desktop",
     "supported_surfaces": ["window", "sheet", "alert", "menu"],
     "tracing": false,
     "version": "1.0.1"

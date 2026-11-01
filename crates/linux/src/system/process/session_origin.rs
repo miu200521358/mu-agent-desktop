@@ -11,7 +11,7 @@ const SERVICE_SUFFIX: &str = ".service";
 /// proof that the caller, and not the session, started a process: the parent
 /// of an activated service and of a launched application is the same
 /// reaper once the starter exits.
-pub(crate) const LAUNCH_MARKER: &str = "AGENT_DESKTOP_LAUNCHED";
+pub(crate) const LAUNCH_MARKER: &str = "MU_AGENT_DESKTOP_LAUNCHED";
 
 fn unknown() -> AdapterError {
     AdapterError::new(

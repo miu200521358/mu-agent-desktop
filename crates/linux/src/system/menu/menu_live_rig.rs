@@ -87,6 +87,7 @@ impl Rig {
             let filter = WindowFilter {
                 focused_only: false,
                 app: None,
+                cloaked_window: None,
             };
             list_windows(&self.bus, &filter, deadline())
                 .ok()?

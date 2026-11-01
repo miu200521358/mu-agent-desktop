@@ -11,7 +11,7 @@ const IDLE_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(900);
 const IO_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
 
 pub(crate) fn is_host_process() -> bool {
-    std::env::var("AGENT_DESKTOP_INTERNAL_COMMAND_HOST").as_deref() == Ok("1")
+    std::env::var("MU_AGENT_DESKTOP_INTERNAL_COMMAND_HOST").as_deref() == Ok("1")
 }
 
 #[path = "command_host_batch.rs"]
@@ -53,7 +53,7 @@ pub(crate) fn run() -> Result<(), AppError> {
     let store = agent_desktop_core::refs::refs_store::RefStore::for_session(session.as_deref())?;
     let mut next_prune = RETAINED_PRUNE_INTERVAL;
     let identity = endpoint::identity(session.as_deref())?;
-    let socket_path = std::env::var_os("AGENT_DESKTOP_INTERNAL_HOST_SOCKET");
+    let socket_path = std::env::var_os("MU_AGENT_DESKTOP_INTERNAL_HOST_SOCKET");
     let reported_missing_permission = std::cell::Cell::new(false);
     let execute = |bytes: &[u8]| {
         if owner.capture_count() >= next_prune {
@@ -134,7 +134,7 @@ fn parse_request(
         AppError::invalid_input("Host request must be a JSON array of CLI arguments")
     })?;
     let mut cli =
-        crate::Cli::try_parse_from(std::iter::once("agent-desktop".to_owned()).chain(args))
+        crate::Cli::try_parse_from(std::iter::once("mu-agent-desktop".to_owned()).chain(args))
             .map_err(|error| {
                 AppError::invalid_input(crate::diagnostic::bounded_text(&error.to_string(), 512))
             })?;

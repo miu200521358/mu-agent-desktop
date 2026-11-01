@@ -14,8 +14,9 @@ pub fn execute(args: FocusWindowArgs, adapter: &dyn PlatformAdapter) -> Result<V
     let filter = WindowFilter {
         focused_only: false,
         app: args.app.clone(),
+        cloaked_window: None,
     };
-    let windows = adapter.list_windows(&filter, deadline)?;
+    let windows = adapter.list_windows_with_filter(&filter, deadline)?;
 
     let candidates = if let Some(id) = &args.window_id {
         windows

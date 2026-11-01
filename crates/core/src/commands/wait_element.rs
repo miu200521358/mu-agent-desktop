@@ -3,7 +3,7 @@ use crate::{
     adapter::PlatformAdapter,
     commands::{helpers::load_ref_entry, wait_predicate, wait_timeout},
     context::CommandContext,
-    refs::ref_resolve_deadline::{POLL_INTERVAL, resolve_within_deadline},
+    refs::ref_resolve_deadline::{POLL_INTERVAL, resolve_within_deadline_for_target},
     refs::resolve_attempt_outcome::ResolveAttemptOutcome,
 };
 use serde_json::{Value, json};
@@ -32,7 +32,12 @@ pub(crate) fn wait_for_element(
     let mut last_observed = json!(null);
     let mut expected_bounds_hash = None;
     loop {
-        match resolve_within_deadline(adapter, &entry, deadline) {
+        match resolve_within_deadline_for_target(
+            adapter,
+            &entry,
+            context.cloaked_window_target(),
+            deadline,
+        ) {
             ResolveAttemptOutcome::DeadlinePassed => {
                 return wait_timeout::element(ref_id, predicate, timeout_ms, last_observed);
             }

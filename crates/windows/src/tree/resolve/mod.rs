@@ -1,4 +1,4 @@
-use agent_desktop_core::{AdapterError, Deadline, ErrorCode, NativeHandle, RefEntry};
+use agent_desktop_core::{AdapterError, Deadline, ErrorCode, NativeHandle, RefEntry, WindowFilter};
 
 #[cfg(target_os = "windows")]
 use super::resolve::resolve_pacing::{FIRST_RETRY_PAUSE, next_retry_pause, sleep_before_retry};
@@ -59,7 +59,16 @@ pub(crate) fn resolve_element_strict(
     entry: &RefEntry,
     deadline: Deadline,
 ) -> Result<NativeHandle, AdapterError> {
-    retry_incomplete_until(deadline, || resolve_attempt(entry, deadline))
+    resolve_element_strict_with_filter(entry, &WindowFilter::default(), deadline)
+}
+
+#[cfg(target_os = "windows")]
+pub(crate) fn resolve_element_strict_with_filter(
+    entry: &RefEntry,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<NativeHandle, AdapterError> {
+    retry_incomplete_until(deadline, || resolve_attempt(entry, filter, deadline))
 }
 
 /// One resolution attempt: the path tier, then the broad search, then the
@@ -72,11 +81,15 @@ pub(crate) fn resolve_element_strict(
 /// region each tier left unread only ever bears on the *negative* verdict, and
 /// is composed once, at the end, by the function that settles it.
 #[cfg(target_os = "windows")]
-fn resolve_attempt(entry: &RefEntry, deadline: Deadline) -> Result<NativeHandle, AdapterError> {
+fn resolve_attempt(
+    entry: &RefEntry,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<NativeHandle, AdapterError> {
     if entry_is_unverifiable(entry) {
         return Err(stale_ref_error(entry));
     }
-    let root = resolve_window_root(entry, deadline)?;
+    let root = window_scope::resolve_window_root_with_filter(entry, filter, deadline)?;
     let source = UiaTreeSource::for_root(&root)?;
     let prepared = source.prepare_root(&root)?;
 
@@ -297,6 +310,20 @@ pub(crate) fn resolve_element_strict(
     Err(stale_ref_error(entry))
 }
 
+#[cfg(not(target_os = "windows"))]
+pub(crate) fn resolve_element_strict_with_filter(
+    entry: &RefEntry,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<NativeHandle, AdapterError> {
+    if filter.cloaked_window.is_some() {
+        return Err(AdapterError::not_supported(
+            "resolve_element_strict_with_filter",
+        ));
+    }
+    resolve_element_strict(entry, deadline)
+}
+
 /// Reaches the stored window's root element from the ref's source window id.
 ///
 /// The fail-closed window gate (the A7-3 wrong-target shape exists to
@@ -318,33 +345,7 @@ pub(crate) fn resolve_window_root(
     entry: &RefEntry,
     deadline: Deadline,
 ) -> Result<UIAElement, AdapterError> {
-    let window_id = entry
-        .source
-        .source_window_id
-        .as_deref()
-        .ok_or_else(|| stale_ref_error(entry))?;
-    let window = agent_desktop_core::WindowInfo {
-        id: window_id.to_string(),
-        title: entry.source.source_window_title.clone().unwrap_or_default(),
-        app: entry.source.source_app.clone().unwrap_or_default(),
-        pid: entry.process.pid,
-        process_instance: entry.process.process_instance.clone(),
-        bounds: None,
-        state: Default::default(),
-    };
-    crate::system::window::window_identity::WindowIdentityEvidence::from_info(
-        crate::system::window::window_ops::parse_handle(&window.id),
-        &window,
-    )
-    .ok_or_else(|| stale_ref_error(entry))?
-    .verify_stored()
-    .map_err(|_| verify_stored_failure_error(entry, deadline))?;
-
-    crate::tree::surfaces::surface_root(
-        agent_desktop_core::ObservationRoot::Window(&window),
-        entry.source.source_surface,
-        deadline,
-    )
+    window_scope::resolve_window_root_with_filter(entry, &WindowFilter::default(), deadline)
 }
 
 /// Classifies a `verify_stored()` failure by the owning process's own
@@ -381,6 +382,8 @@ pub(crate) mod resolve_chrome_repair;
 pub(crate) mod resolve_match;
 pub(crate) mod resolve_pacing;
 pub(crate) mod resolve_search;
+#[cfg(target_os = "windows")]
+pub(crate) mod window_scope;
 #[cfg(all(test, target_os = "windows"))]
 #[path = "resolve_tests.rs"]
 mod windows_only;

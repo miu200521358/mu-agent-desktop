@@ -11,7 +11,7 @@ deterministic regressions, not proof of Numbers task completion.
 
 ## Ownership and evidence
 
-Use an immutable release binary, an isolated absolute `AGENT_DESKTOP_HOME`, and
+Use an immutable release binary, an isolated absolute `MU_AGENT_DESKTOP_HOME`, and
 an owned document named `AD Reliability.numbers`. Record binary/diff hashes,
 macOS/Numbers versions, seed contents, permissions and process/window identity.
 Never activate the app or touch another document. Preserve original command
@@ -84,7 +84,7 @@ bash tests/real-apps/numbers-sheets.sh /absolute/candidate w-123 @snapshot:e1 @s
 
 The arguments are `BINARY` (absolute path), `WINDOW_ID`, `SHEET_1_REF`,
 `OTHER_SHEET_REF`, and an optional `CYCLES` (default 5, at most 15). The
-environment must set `AGENT_DESKTOP_HOME` to an absolute path. Use actual
+environment must set `MU_AGENT_DESKTOP_HOME` to an absolute path. Use actual
 qualified refs, not the placeholders above. Start with Eval Other active so the
 first click is a transition. The script reuses the same refs for two
 transitions per cycle, prints unchanged JSON and saves it with the screenshots

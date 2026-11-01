@@ -1,3 +1,5 @@
+pub(crate) mod cloaked_target;
+pub(crate) mod diagnostic;
 pub(crate) mod frame_identity;
 pub(crate) mod listing_retry;
 pub(crate) mod window_activate;

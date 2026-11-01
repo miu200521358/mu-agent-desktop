@@ -145,12 +145,12 @@ Retiring both through one arm is how a hung or faulting target becomes a truncat
 ## Coordination
 
 ### State Root
-The single on-disk directory that owns everything the CLI persists: sessions, snapshot refmaps and their locks, trace segments, and the `latest_snapshot_id` pointer. Default is `~/.agent-desktop`.
+The single on-disk directory that owns everything the CLI persists: sessions, snapshot refmaps and their locks, trace segments, and the `latest_snapshot_id` pointer. Default is `~/.mu-agent-desktop`.
 
-`AGENT_DESKTOP_HOME` relocates the state root; the env value is the root itself, with no `.agent-desktop` suffix appended. Resolution lives in core and is identical across platforms. Explicit user-given output paths (`screenshot [PATH]`, `trace export --out`, `--trace <path>`) are not re-rooted.
+`MU_AGENT_DESKTOP_HOME` relocates the state root; the env value is the root itself, with no `.mu-agent-desktop` suffix appended. Resolution lives in core and is identical across platforms. Explicit user-given output paths (`screenshot [PATH]`, `trace export --out`, `--trace <path>`) are not re-rooted.
 
 ### Session
-An on-disk container under `~/.agent-desktop/sessions/<id>/` that owns snapshot refmaps, a `trace/` directory, and a `session.json` manifest.
+An on-disk container under `~/.mu-agent-desktop/sessions/<id>/` that owns snapshot refmaps, a `trace/` directory, and a `session.json` manifest.
 
 `session start` writes the manifest (`trace: on` unless `--no-trace`) and pre-creates `trace/`. It returns the new ID but does not activate it for later processes. Explicit `--session` takes precedence over `AGENT_DESKTOP_SESSION`; with neither, commands use the global, non-session namespace. Bare `--session <id>` without a manifest remains snapshot-namespace-only for backward compatibility.
 

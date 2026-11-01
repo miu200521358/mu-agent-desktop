@@ -15,8 +15,8 @@ from runner import stage
 def main(argv: list[str]) -> None:
     base = Path(
         os.environ.get("AGENT_DESKTOP_SESSION_BASE")
-        or (Path(os.environ["XDG_RUNTIME_DIR"]) / "agent-desktop-sessions"
-            if os.environ.get("XDG_RUNTIME_DIR") else Path(f"/tmp/agent-desktop-sessions-{os.getuid()}"))
+        or (Path(os.environ["XDG_RUNTIME_DIR"]) / "mu-agent-desktop-sessions"
+            if os.environ.get("XDG_RUNTIME_DIR") else Path(f"/tmp/mu-agent-desktop-sessions-{os.getuid()}"))
     )
     base.mkdir(mode=0o700, parents=True, exist_ok=True)
     suite = Path(os.environ.get("AGENT_DESKTOP_E2E_SUITE")
@@ -34,12 +34,12 @@ def main(argv: list[str]) -> None:
             subprocess.run(["cargo", "build", "--locked", "--release", "-p", "agent-desktop",
                             "-p", "agent-desktop-linux", "--bins"],
                            cwd=HARNESS.parent.parent, env=env, check=True)
-            source = build_dir / "release/agent-desktop"
+            source = build_dir / "release/mu-agent-desktop"
         binary = stage.stage_binary(Path(source), suite)
-        if source == suite / "build/release/agent-desktop":
+        if source == suite / "build/release/mu-agent-desktop":
             shutil.rmtree(suite / "build")
         os.environ["AGENT_DESKTOP_E2E_BIN_SRC"] = str(binary)
-        for name in ("agent-desktop", stage.HELPER_NAME):
+        for name in ("mu-agent-desktop", stage.HELPER_NAME):
             print(f"image: {(suite / 'bin' / (name + '.sha256')).read_text().strip()}", flush=True)
     os.execv(sys.executable, [sys.executable, str(HARNESS.parent / "e2e/interaction_lock.py"),
                              "run", sys.executable, "-I", str(HARNESS / "runner/main.py"), *argv])

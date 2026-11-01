@@ -2,7 +2,7 @@
 
 use agent_desktop_core::{
     AdapterError, Deadline, DeliverySemantics, DisplayInfo, ErrorCode, ImageBuffer,
-    ScreenshotTarget, WindowInfo,
+    ScreenshotTarget, WindowFilter, WindowInfo,
 };
 
 use super::capture_backend::{CaptureSubject, capture_with_precedence};
@@ -10,17 +10,33 @@ use crate::system::display::{
     capture_selection, display_at, scale_for_bounds, verify_display_identity,
 };
 use crate::system::window::window_ops::parse_handle;
-use crate::system::window::window_resolve::resolve_window_strict;
+use crate::system::window::window_resolve::resolve_window_strict_with_filter;
 
 pub(crate) fn screenshot(
     target: ScreenshotTarget,
     deadline: Deadline,
 ) -> Result<ImageBuffer, AdapterError> {
-    dispatch_target(target, deadline).map_err(not_delivered)
+    screenshot_with_filter(target, &WindowFilter::default(), deadline)
+}
+
+pub(crate) fn screenshot_with_filter(
+    target: ScreenshotTarget,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<ImageBuffer, AdapterError> {
+    if filter.cloaked_window.is_some() && !matches!(target, ScreenshotTarget::ExactWindow(_)) {
+        return Err(AdapterError::new(
+            ErrorCode::InvalidArgs,
+            "A cloaked-window permission requires an exact-window screenshot target",
+        )
+        .with_disposition(DeliverySemantics::not_delivered()));
+    }
+    dispatch_target(target, filter, deadline).map_err(not_delivered)
 }
 
 fn dispatch_target(
     target: ScreenshotTarget,
+    filter: &WindowFilter,
     deadline: Deadline,
 ) -> Result<ImageBuffer, AdapterError> {
     deadline.ensure_remaining()?;
@@ -29,7 +45,9 @@ fn dispatch_target(
         ScreenshotTarget::Display { index, expected } => {
             capture_display(index, &expected, deadline)
         }
-        ScreenshotTarget::ExactWindow(window) => capture_window(&window, deadline),
+        ScreenshotTarget::ExactWindow(window) => {
+            capture_window_with_filter(&window, filter, deadline)
+        }
         ScreenshotTarget::FullScreen => capture_screen(0, deadline),
     }
 }
@@ -74,6 +92,14 @@ pub(crate) fn capture_window(
     window: &WindowInfo,
     deadline: Deadline,
 ) -> Result<ImageBuffer, AdapterError> {
+    capture_window_with_filter(window, &WindowFilter::default(), deadline)
+}
+
+pub(crate) fn capture_window_with_filter(
+    window: &WindowInfo,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<ImageBuffer, AdapterError> {
     if window.process_instance.is_none() {
         return Err(AdapterError::new(
             ErrorCode::InvalidArgs,
@@ -83,7 +109,7 @@ pub(crate) fn capture_window(
         .with_disposition(DeliverySemantics::not_delivered()));
     }
     deadline.ensure_remaining()?;
-    let verified = resolve_window_strict(window, deadline)?;
+    let verified = resolve_window_strict_with_filter(window, filter, deadline)?;
     let handle = parse_handle(&verified.id);
     if handle.is_null() {
         return Err(AdapterError::new(
@@ -111,7 +137,7 @@ pub(crate) fn capture_window(
             .with_suggestion("Run 'list-windows' to refresh window identifiers, then retry.")
             .with_disposition(DeliverySemantics::not_delivered()));
         }
-        resolve_window_strict(&verified, deadline)?;
+        resolve_window_strict_with_filter(&verified, filter, deadline)?;
     }
     Ok(captured)
 }

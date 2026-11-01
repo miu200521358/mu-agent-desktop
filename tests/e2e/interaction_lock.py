@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 
-LEASE_FD_ENV = "AGENT_DESKTOP_INTERACTION_LEASE_FD"
+LEASE_FD_ENV = "MU_AGENT_DESKTOP_INTERACTION_LEASE_FD"
 
 
 def canonical_lock_path(root="/tmp"):

@@ -21,7 +21,10 @@ pub(crate) fn policy_for(cmd: &Commands) -> PermissionNeed {
         | Commands::CursorOverlay(_)
         | Commands::Trace(_) => None,
         Commands::Status | Commands::Permissions(_) => None,
-        Commands::ListWindows(_) | Commands::ListDisplays | Commands::ListApps(_) => None,
+        Commands::ListWindows(_)
+        | Commands::WindowDiagnostic(_)
+        | Commands::ListDisplays
+        | Commands::ListApps(_) => None,
         Commands::ClipboardGet(_) | Commands::ClipboardSet(_) | Commands::ClipboardClear => None,
         Commands::Batch(_) => None,
 
@@ -141,6 +144,11 @@ pub(crate) fn requires_permission_report(cmd: &Commands) -> bool {
 
 fn validate_args(cmd: &Commands) -> Result<(), AppError> {
     match cmd {
+        Commands::WindowDiagnostic(args) if args.pid.is_none_or(|pid| pid == 0) => {
+            return Err(AppError::invalid_input(
+                "window-diagnostic requires a positive --pid",
+            ));
+        }
         Commands::Snapshot(args) => {
             if let Some(root) = &args.root {
                 if args.surface != crate::cli_args::Surface::Window {
@@ -224,6 +232,7 @@ fn validate_args(cmd: &Commands) -> Result<(), AppError> {
         | Commands::Launch(_)
         | Commands::CloseApp(_)
         | Commands::ListWindows(_)
+        | Commands::WindowDiagnostic(_)
         | Commands::ListDisplays
         | Commands::ListApps(_)
         | Commands::FocusWindow(_)

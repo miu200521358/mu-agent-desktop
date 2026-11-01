@@ -70,8 +70,12 @@ fn a_destroyed_hwnd_fails_reverification_as_window_not_found() {
         state: Default::default(),
     };
 
-    let error = re_verify_root(agent_desktop_core::ObservationRoot::Window(&window))
-        .expect_err("a destroyed handle must fail the liveness gate");
+    let error = re_verify_root(
+        agent_desktop_core::ObservationRoot::Window(&window),
+        None,
+        Deadline::after(1_000).expect("deadline is valid"),
+    )
+    .expect_err("a destroyed handle must fail the liveness gate");
     assert_eq!(error.code, ErrorCode::WindowNotFound);
 }
 
@@ -98,7 +102,11 @@ fn a_freshly_created_fixture_window_passes_reverification() {
         state: Default::default(),
     };
 
-    let result = re_verify_root(ObservationRoot::Window(&window));
+    let result = re_verify_root(
+        ObservationRoot::Window(&window),
+        None,
+        Deadline::after(1_000).expect("deadline is valid"),
+    );
     assert!(
         result.is_ok(),
         "a live fixture root must pass the liveness gate: {result:?}"

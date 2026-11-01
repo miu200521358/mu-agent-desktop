@@ -33,7 +33,7 @@ windows-sys = { version = "0.61", features = [
 ] }
 
 [[bin]]
-name = "agent-desktop"
+name = "mu-agent-desktop"
 path = "main.rs"
 
 [[test]]

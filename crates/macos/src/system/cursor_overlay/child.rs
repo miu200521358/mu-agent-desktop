@@ -11,8 +11,8 @@ use std::time::Duration;
 
 use super::bridge;
 
-pub(super) const MARKER: &str = "AGENT_DESKTOP_CURSOR_OVERLAY_CHILD";
-pub(super) const SOCKET_ENV: &str = "AGENT_DESKTOP_CURSOR_OVERLAY_SOCKET";
+pub(super) const MARKER: &str = "MU_AGENT_DESKTOP_CURSOR_OVERLAY_CHILD";
+pub(super) const SOCKET_ENV: &str = "MU_AGENT_DESKTOP_CURSOR_OVERLAY_SOCKET";
 const MAX_INSTRUCTION_BYTES: u64 = 4 * 1024;
 
 #[derive(Default)]

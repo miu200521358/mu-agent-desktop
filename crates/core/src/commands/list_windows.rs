@@ -13,8 +13,9 @@ pub fn execute(args: ListWindowsArgs, adapter: &dyn PlatformAdapter) -> Result<V
     let filter = WindowFilter {
         focused_only: false,
         app: args.app,
+        cloaked_window: None,
     };
-    let windows = adapter.list_windows(
+    let windows = adapter.list_windows_with_filter(
         &filter,
         crate::Deadline::after(
             args.timeout_ms

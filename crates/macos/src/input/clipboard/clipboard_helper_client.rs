@@ -103,16 +103,22 @@ fn run(
         .arg(operation)
         .args(args)
         .env_clear()
-        .env("AGENT_DESKTOP_MACOS_HELPER_MODE", "clipboard")
+        .env("MU_AGENT_DESKTOP_MACOS_HELPER_MODE", "clipboard")
         .env(
-            "AGENT_DESKTOP_MACOS_HELPER_PROTOCOL",
+            "MU_AGENT_DESKTOP_MACOS_HELPER_PROTOCOL",
             protocol::PROTOCOL_VERSION,
         )
-        .env("AGENT_DESKTOP_MACOS_HELPER_BUILD", protocol::BUILD_IDENTITY)
-        .env("AGENT_DESKTOP_MACOS_HELPER_TOKEN", &token)
-        .env("AGENT_DESKTOP_MACOS_HELPER_OUTPUT_FD", protocol::OUTPUT_FD)
         .env(
-            "AGENT_DESKTOP_MACOS_HELPER_DEADLINE_MS",
+            "MU_AGENT_DESKTOP_MACOS_HELPER_BUILD",
+            protocol::BUILD_IDENTITY,
+        )
+        .env("MU_AGENT_DESKTOP_MACOS_HELPER_TOKEN", &token)
+        .env(
+            "MU_AGENT_DESKTOP_MACOS_HELPER_OUTPUT_FD",
+            protocol::OUTPUT_FD,
+        )
+        .env(
+            "MU_AGENT_DESKTOP_MACOS_HELPER_DEADLINE_MS",
             deadline.remaining_ms().to_string(),
         );
     let output =

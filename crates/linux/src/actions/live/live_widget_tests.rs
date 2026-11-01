@@ -208,6 +208,7 @@ fn frame_of_app(adapter: &LinuxAdapter, app: &str) -> crate::tree::AtspiElement 
         let filter = WindowFilter {
             focused_only: false,
             app: Some(app.to_owned()),
+            cloaked_window: None,
         };
         let windows = adapter
             .list_windows(&filter, Deadline::after(5_000).expect("a deadline"))

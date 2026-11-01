@@ -28,7 +28,7 @@ fn env_value<'a>(command: &'a Command, name: &str) -> Option<&'a OsStr> {
 #[test]
 fn an_unrelated_parent_variable_is_dropped_and_an_unset_one_stays_unset() {
     let parent = |name: &str| match name {
-        "SSH_AUTH_SOCK" | "PATH" | "AGENT_DESKTOP_INTERACTION_LEASE_FD" => Some("x".to_owned()),
+        "SSH_AUTH_SOCK" | "PATH" | "MU_AGENT_DESKTOP_INTERACTION_LEASE_FD" => Some("x".to_owned()),
         "HOME" => Some("/home/u".to_owned()),
         _ => None,
     };
@@ -37,7 +37,7 @@ fn an_unrelated_parent_variable_is_dropped_and_an_unset_one_stays_unset() {
     for name in [
         "SSH_AUTH_SOCK",
         "PATH",
-        "AGENT_DESKTOP_INTERACTION_LEASE_FD",
+        "MU_AGENT_DESKTOP_INTERACTION_LEASE_FD",
         "XAUTHORITY",
     ] {
         assert_eq!(env_value(&command, name), None, "{name}");

@@ -60,13 +60,19 @@ struct ProtocolContext {
 
 fn protocol_context() -> Option<ProtocolContext> {
     let exact = [
-        ("AGENT_DESKTOP_MACOS_HELPER_MODE", "clipboard"),
+        ("MU_AGENT_DESKTOP_MACOS_HELPER_MODE", "clipboard"),
         (
-            "AGENT_DESKTOP_MACOS_HELPER_PROTOCOL",
+            "MU_AGENT_DESKTOP_MACOS_HELPER_PROTOCOL",
             protocol::PROTOCOL_VERSION,
         ),
-        ("AGENT_DESKTOP_MACOS_HELPER_BUILD", protocol::BUILD_IDENTITY),
-        ("AGENT_DESKTOP_MACOS_HELPER_OUTPUT_FD", protocol::OUTPUT_FD),
+        (
+            "MU_AGENT_DESKTOP_MACOS_HELPER_BUILD",
+            protocol::BUILD_IDENTITY,
+        ),
+        (
+            "MU_AGENT_DESKTOP_MACOS_HELPER_OUTPUT_FD",
+            protocol::OUTPUT_FD,
+        ),
     ];
     if exact
         .iter()
@@ -74,11 +80,11 @@ fn protocol_context() -> Option<ProtocolContext> {
     {
         return None;
     }
-    let token = std::env::var("AGENT_DESKTOP_MACOS_HELPER_TOKEN").ok()?;
+    let token = std::env::var("MU_AGENT_DESKTOP_MACOS_HELPER_TOKEN").ok()?;
     if token.len() != 64 || !token.bytes().all(|byte| byte.is_ascii_hexdigit()) {
         return None;
     }
-    let timeout_ms = std::env::var("AGENT_DESKTOP_MACOS_HELPER_DEADLINE_MS")
+    let timeout_ms = std::env::var("MU_AGENT_DESKTOP_MACOS_HELPER_DEADLINE_MS")
         .ok()?
         .parse::<u64>()
         .ok()?

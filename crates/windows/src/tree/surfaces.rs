@@ -1,4 +1,6 @@
-use agent_desktop_core::{AdapterError, Deadline, ErrorCode, ObservationRoot, SnapshotSurface};
+use agent_desktop_core::{
+    AdapterError, Deadline, ErrorCode, ObservationRoot, SnapshotSurface, WindowFilter,
+};
 use serde_json::json;
 
 use super::automation::root_from_hwnd;
@@ -76,6 +78,67 @@ pub(crate) fn surface_root(
             })
         }
         (ObservationRoot::Window(_), _) => Err(AdapterError::not_supported("surface")),
+    }
+}
+
+pub(crate) fn surface_root_with_filter(
+    root: ObservationRoot<'_>,
+    surface: SnapshotSurface,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<UIAElement, AdapterError> {
+    let Some(target) = filter.cloaked_window else {
+        return surface_root(root, surface, deadline);
+    };
+    if surface != SnapshotSurface::Window {
+        return Err(AdapterError::new(
+            ErrorCode::InvalidArgs,
+            "A cloaked-window permission supports the window surface only",
+        ));
+    }
+    let expected = window_identity_for_root(root)?;
+    if expected.id != target.window_id() || expected.pid != target.pid {
+        return Err(AdapterError::new(
+            ErrorCode::StaleRef,
+            "Observation root does not match the one-command cloaked-window permission",
+        ));
+    }
+    crate::system::window::window_resolve::resolve_window_strict_with_filter(
+        &expected, filter, deadline,
+    )?;
+    match root {
+        ObservationRoot::Window(window) => root_from_hwnd(parse_window_id(&window.id)?, deadline),
+        ObservationRoot::Element { handle, .. } => {
+            super::element::uia_element(handle).cloned().map_err(|_| {
+                AdapterError::new(
+                    ErrorCode::StaleRef,
+                    "Element root handle is invalid for this platform",
+                )
+                .with_details(json!({ "kind": "element_root_wrong_payload" }))
+            })
+        }
+    }
+}
+
+fn window_identity_for_root(
+    root: ObservationRoot<'_>,
+) -> Result<agent_desktop_core::WindowInfo, AdapterError> {
+    match root {
+        ObservationRoot::Window(window) => Ok(window.clone()),
+        ObservationRoot::Element { entry, .. } => {
+            let id = entry.source.source_window_id.clone().ok_or_else(|| {
+                AdapterError::new(ErrorCode::StaleRef, "Ref has no source window")
+            })?;
+            Ok(agent_desktop_core::WindowInfo {
+                id,
+                title: entry.source.source_window_title.clone().unwrap_or_default(),
+                app: entry.source.source_app.clone().unwrap_or_default(),
+                pid: entry.process.pid,
+                process_instance: entry.process.process_instance.clone(),
+                bounds: None,
+                state: Default::default(),
+            })
+        }
     }
 }
 

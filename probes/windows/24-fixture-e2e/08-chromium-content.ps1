@@ -18,7 +18,7 @@
     inject through `keybd_event`, never a posted message) rather than through
     the product.
 
-    Five legs, run against the shipped `agent-desktop.exe`, exercising the
+    Five legs, run against the shipped `mu-agent-desktop.exe`, exercising the
     same graded resolver A17-8 could not reach:
 
       1. Negative control (runs FIRST): the vault is registered and launched
@@ -114,7 +114,7 @@ function ConvertFrom-A24ChromiumJson {
 function Get-A24AgentDesktopPath {
     if ($AgentDesktopPath) { return $AgentDesktopPath }
     $repoRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $script:ProbeDir))
-    return Join-Path $repoRoot 'target\release\agent-desktop.exe'
+    return Join-Path $repoRoot 'target\release\mu-agent-desktop.exe'
 }
 
 function Invoke-A24AgentDesktop {

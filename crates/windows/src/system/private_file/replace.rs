@@ -49,7 +49,7 @@ use windows_sys::Win32::Storage::FileSystem::{
 
 use super::{invalid_input, locality, owner, path};
 
-const TEMP_LEASE_PREFIX: &str = ".agent-desktop-tmp-p";
+const TEMP_LEASE_PREFIX: &str = ".mu-agent-desktop-tmp-p";
 const LEASE_CREATE_ATTEMPTS: usize = 32;
 const TEMP_CREATE_ATTEMPTS: usize = 32;
 const MEASURED_REPLACE_FLAGS: u32 = 0;

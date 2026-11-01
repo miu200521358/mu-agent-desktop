@@ -107,7 +107,7 @@ agent-desktop clipboard-clear
 ```
 
 - Formats: `text` (default), `auto` (file references, then image, then text), `image`, `file-urls`. Output is `{ "type": "text", "text": ... }`, `{ "type": "file_urls", ... }`, or `{ "type": "image", "path", "width", "height" }`. When the clipboard has nothing in that form: `{ "type": "<format>", "found": false }`.
-- Image bytes go to `--out`, or to a private file under the active session directory (or `~/.agent-desktop/tmp`).
+- Image bytes go to `--out`, or to a private file under the active session directory (or `~/.mu-agent-desktop/tmp`).
 - `clipboard-set` writes one representation per call. `--file-url` and `--image` win over the positional text. Every `--file-url` path must exist, or `INVALID_ARGS`.
 - A write that loses clipboard ownership mid-way reports `delivered_unverified`, not a false success.
 
@@ -165,7 +165,7 @@ Wait entries use flat JSON keys matching the wait argument fields. For event wai
 
 ## Sessions and traces
 
-A session is an on-disk container under `<state root>/sessions/<id>/` with a manifest, snapshot refmaps and, when tracing is on, a `trace/` directory. The state root is `~/.agent-desktop`. `AGENT_DESKTOP_HOME` relocates it. It must be an absolute path, or the command fails with `INVALID_ARGS`. `status` reports it as `state_root`.
+A session is an on-disk container under `<state root>/sessions/<id>/` with a manifest, snapshot refmaps and, when tracing is on, a `trace/` directory. The state root is `~/.mu-agent-desktop`. `MU_AGENT_DESKTOP_HOME` relocates it. It must be an absolute path, or the command fails with `INVALID_ARGS`. `status` reports it as `state_root`.
 
 ```bash
 export AGENT_DESKTOP_SESSION="$(agent-desktop session start --name "invoice-bot" | jq -r '.data.session_id')"

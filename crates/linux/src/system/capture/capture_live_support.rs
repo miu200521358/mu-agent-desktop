@@ -109,6 +109,7 @@ pub(super) fn wait_for_listed(bus: &SharedBus, pid: u32) -> WindowInfo {
     let everything = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     let started = Instant::now();
     while started.elapsed() < SETTLE {
@@ -141,6 +142,7 @@ pub(super) fn place_partly_off_screen(
     let everything = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     let started = Instant::now();
     while started.elapsed() < SETTLE {

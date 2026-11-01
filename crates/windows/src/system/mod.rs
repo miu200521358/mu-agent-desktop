@@ -27,3 +27,4 @@ pub(crate) mod shell;
 pub(crate) mod signal;
 pub(crate) mod wait;
 pub(crate) mod window;
+pub(crate) mod window_diagnostic;

@@ -57,7 +57,7 @@ fn write_png(path: &std::path::Path, width: u32, height: u32) {
 
 fn scratch_png(name: &str) -> std::path::PathBuf {
     let directory = std::env::temp_dir().join(format!(
-        "agent-desktop-cursor-image-{}-{name}",
+        "mu-agent-desktop-cursor-image-{}-{name}",
         std::process::id()
     ));
     std::fs::create_dir_all(&directory).expect("scratch directory");

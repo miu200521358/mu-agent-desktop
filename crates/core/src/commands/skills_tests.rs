@@ -123,7 +123,7 @@ fn get_full_inlines_references() {
     assert!(content.contains("session start` does not activate later processes"));
     assert!(content.contains("session-owned ref still requires the same `--session`"));
     assert!(content.contains("bounded isolated helper"));
-    assert!(!content.contains("~/.agent-desktop/current_session"));
+    assert!(!content.contains("~/.mu-agent-desktop/current_session"));
     assert!(!content.contains("resolves cross-session"));
     assert!(!content.contains("snapshot IDs do not require also passing `--session`"));
 }

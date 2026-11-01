@@ -1,3 +1,6 @@
+//! Adapter fragments use module-scope macros because `include!` cannot expand
+//! associated items directly inside an `impl`.
+
 use agent_desktop_core::{
     ActionResult, AdapterError, AdapterSession, AppInfo, Deadline, DismissAllNotificationsRequest,
     DismissNotificationRequest, DisplayInfo, ImageBuffer, InteractionLease, InteractionPolicy,
@@ -10,11 +13,15 @@ use agent_desktop_core::{
 use crate::adapter::WindowsAdapter;
 use crate::system::close_outcome::CloseOutcome;
 
+include!("adapter_cloaked_window_ops.rs");
+
 #[cfg(target_os = "windows")]
 #[path = "tcp_listener.rs"]
 pub(crate) mod tcp_listener;
 
 impl SystemOps for WindowsAdapter {
+    adapter_cloaked_window_ops!();
+
     fn update_cursor_overlay(
         &self,
         control: &agent_desktop_core::CursorOverlayControl,
@@ -27,7 +34,7 @@ impl SystemOps for WindowsAdapter {
     }
 
     /// The cross-process desktop-interaction lease: an exclusive,
-    /// token-derived lock file when `AGENT_DESKTOP_INTERACTION_LEASE_HANDLE`
+    /// token-derived lock file when `MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE`
     /// is unset, or adoption of the inherited handle it names - re-verifying
     /// both the handle's identity and its exclusivity before trusting it,
     /// because a handle's share mode cannot be read back on Windows and
@@ -152,6 +159,7 @@ impl SystemOps for WindowsAdapter {
         let filter = WindowFilter {
             focused_only: true,
             app: None,
+            cloaked_window: None,
         };
         let windows = self.list_windows(&filter, deadline)?;
         Ok(windows.into_iter().next())

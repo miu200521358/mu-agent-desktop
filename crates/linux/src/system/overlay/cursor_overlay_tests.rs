@@ -55,7 +55,7 @@ fn live_x11_cursor_adapter_paints_agent_positions_and_retires_resources() {
     let (oracle, index) = x11rb::connect(None).expect("independent X11 connection");
     let root = oracle.setup().roots[index].root;
     let owner = oracle
-        .intern_atom(false, b"_AGENT_DESKTOP_CURSOR_OWNER")
+        .intern_atom(false, b"_MU_AGENT_DESKTOP_CURSOR_OWNER")
         .unwrap()
         .reply()
         .unwrap()
@@ -176,7 +176,7 @@ fn live_wayland_cursor_refusal_reports_unrendered_without_an_x11_window() {
     let (oracle, index) = x11rb::connect(None).expect("private fallback X11 display");
     let root = oracle.setup().roots[index].root;
     let owner = oracle
-        .intern_atom(false, b"_AGENT_DESKTOP_CURSOR_OWNER")
+        .intern_atom(false, b"_MU_AGENT_DESKTOP_CURSOR_OWNER")
         .unwrap()
         .reply()
         .unwrap()

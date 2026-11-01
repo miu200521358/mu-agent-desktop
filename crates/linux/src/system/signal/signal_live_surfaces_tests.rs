@@ -143,6 +143,7 @@ fn signal_live_window_taken_before_a_stop_resolves_to_app_unresponsive() {
     let filter = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     let windows = list_windows(rig.bus(), &filter, deadline(10_000)).expect("windows");
     let target = windows.iter().find(|w| w.pid == pid).expect("a window");

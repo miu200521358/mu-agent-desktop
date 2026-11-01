@@ -1,6 +1,6 @@
 use crate::{
-    AdapterError, Deadline, ErrorCode, adapter::TreeOptions, locator::LocatorQuery,
-    snapshot::snapshot_surface::SnapshotSurface,
+    AdapterError, CloakedWindowTarget, Deadline, ErrorCode, adapter::TreeOptions,
+    locator::LocatorQuery, snapshot::snapshot_surface::SnapshotSurface,
 };
 
 use super::{
@@ -16,6 +16,8 @@ pub struct ObservationRequest {
     evidence_plan: EvidencePlan,
     pub budget: ObservationBudget,
     pub observation_mode: ObservationMode,
+    /// Optional one-command target authorization; ordinary requests start unprivileged.
+    pub cloaked_window_target: Option<CloakedWindowTarget>,
 }
 
 /// The observation-mode sub-struct: shallow-traversal and renderer-
@@ -83,6 +85,7 @@ impl ObservationRequest {
                 skeleton: options.skeleton,
                 force_renderer_accessibility: options.force_renderer_accessibility,
             },
+            cloaked_window_target: None,
         }
     }
 
@@ -99,7 +102,14 @@ impl ObservationRequest {
             evidence_plan: EvidencePlan::uniform(EvidenceRequirements::locator(query, request)),
             budget: ObservationBudget::default(),
             observation_mode: ObservationMode::default(),
+            cloaked_window_target: None,
         }
+    }
+
+    /// Adds the explicit target to this request without changing its other observation limits.
+    pub fn with_cloaked_window_target(mut self, target: CloakedWindowTarget) -> Self {
+        self.cloaked_window_target = Some(target);
+        self
     }
 
     pub(crate) fn locator_for_root(
@@ -142,6 +152,7 @@ impl ObservationRequest {
             ),
             budget: ObservationBudget::default(),
             observation_mode: ObservationMode::default(),
+            cloaked_window_target: None,
         }
     }
 

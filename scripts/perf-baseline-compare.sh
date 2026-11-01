@@ -36,14 +36,14 @@ cd "$repo"
 base_sha="$(git rev-parse --short "$base_ref")"
 head_sha="$(git rev-parse --short HEAD)"
 if ! git diff --quiet HEAD; then head_sha="${head_sha}+working-tree"; fi
-[ -n "$out" ] || out="$(mktemp -d "/tmp/agent-desktop-perf-${head_sha}-vs-${base_sha}.XXXXXX")"
+[ -n "$out" ] || out="$(mktemp -d "/tmp/mu-agent-desktop-perf-${head_sha}-vs-${base_sha}.XXXXXX")"
 mkdir -p "$out"
 echo "== perf compare: HEAD ${head_sha} vs base ${base_sha} -> ${out}"
 
 echo "== building HEAD release binary"
 cargo build --release -p agent-desktop >/dev/null
-head_bin="$out/head-agent-desktop"
-cp "$repo/target/release/agent-desktop" "$head_bin"
+head_bin="$out/head-mu-agent-desktop"
+cp "$repo/target/release/mu-agent-desktop" "$head_bin"
 
 echo "== building base release binary (${base_sha}) in a temporary worktree"
 wt="$out/base-worktree"

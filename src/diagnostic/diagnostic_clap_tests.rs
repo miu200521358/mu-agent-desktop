@@ -2,7 +2,7 @@ use super::clap_error_summary;
 
 /// The shape clap emits for a missing positional: the headline carries no
 /// argument name, so a summary built from it alone cannot say what is missing.
-const MISSING_POSITIONAL: &str = "error: the following required arguments were not provided:\n  <VALUE>\n\nUsage: agent-desktop.exe set-value <REF> <VALUE>\n\nFor more information, try '--help'.";
+const MISSING_POSITIONAL: &str = "error: the following required arguments were not provided:\n  <VALUE>\n\nUsage: mu-agent-desktop.exe set-value <REF> <VALUE>\n\nFor more information, try '--help'.";
 
 #[test]
 fn a_missing_argument_summary_names_the_argument() {

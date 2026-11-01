@@ -41,22 +41,22 @@ thread_local! {
     static CREATE_RACE: RefCell<Option<(PathBuf, PathBuf)>> = const { RefCell::new(None) };
 }
 
-/// `GetSystemWindowsDirectoryW`'s drive joined to `ProgramData\agent-desktop`.
+/// `GetSystemWindowsDirectoryW`'s drive joined to `ProgramData\mu-agent-desktop`.
 /// Reads no environment variable, so an isolated `%TEMP%`/`%LOCALAPPDATA%`
 /// cannot move it and two concurrent, differently-isolated invocations still
 /// contend on the same lock.
 ///
 /// `ProgramData` itself is canonicalized (it always exists, unlike
-/// `ProgramData\agent-desktop` on a fresh box) so an ambient redirect above
-/// it resolves once, here - `agent-desktop` and everything below it are then
+/// `ProgramData\mu-agent-desktop` on a fresh box) so an ambient redirect above
+/// it resolves once, here - `mu-agent-desktop` and everything below it are then
 /// literal joins that `validate_final_path` compares byte-for-byte, so a
-/// reparse point planted at either the shared `agent-desktop` folder or the
+/// reparse point planted at either the shared `mu-agent-desktop` folder or the
 /// per-user leaf is caught rather than silently followed.
 pub(super) fn canonical_root() -> Result<PathBuf, AdapterError> {
     let windows_dir = system_windows_directory()?;
     let program_data = Path::new(&drive_root(&windows_dir)?).join("ProgramData");
     let canonical_program_data = std::fs::canonicalize(&program_data).map_err(io_untrusted)?;
-    Ok(strip_extended_prefix(&canonical_program_data).join("agent-desktop"))
+    Ok(strip_extended_prefix(&canonical_program_data).join("mu-agent-desktop"))
 }
 
 /// The drive root **with** its trailing separator (`"C:\"`), not just the
@@ -142,9 +142,9 @@ pub(super) fn ensure_private(directory: &Path) -> Result<(), AdapterError> {
 }
 
 /// Creates the whole chain down to `directory` - on a fresh box the shared
-/// `ProgramData\agent-desktop` parent does not exist yet either, so a
+/// `ProgramData\mu-agent-desktop` parent does not exist yet either, so a
 /// single-level `create_dir` would fail `NotFound`. Only `directory` itself
-/// (never an ordinary intermediate such as `agent-desktop`) is treated as
+/// (never an ordinary intermediate such as `mu-agent-desktop`) is treated as
 /// "freshly created" for DACL-authoring purposes; existence is checked
 /// before creating rather than read off `create_dir_all`'s result, which
 /// does not distinguish "created" from "already there".

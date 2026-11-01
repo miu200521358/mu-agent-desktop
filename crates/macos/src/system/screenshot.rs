@@ -146,7 +146,7 @@ mod imp {
         fn new() -> Result<Self, AdapterError> {
             let mut dir = std::env::temp_dir();
             dir.push(format!(
-                "agent-desktop-screenshot-{}-{}",
+                "mu-agent-desktop-screenshot-{}-{}",
                 std::process::id(),
                 NEXT_TEMP_ID.fetch_add(1, Ordering::Relaxed)
             ));

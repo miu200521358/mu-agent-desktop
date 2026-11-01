@@ -154,7 +154,7 @@ class ResolveShiftLive(unittest.TestCase):
                          if node.get("name") == "Save" and node.get("role") == "button"]
                 self.assertEqual(len(saves), 2, snapshot)
                 old_ref = saves[0]["ref_id"]
-                refmap_path = (Path(os.environ["AGENT_DESKTOP_HOME"]) / "snapshots" /
+                refmap_path = (Path(os.environ["MU_AGENT_DESKTOP_HOME"]) / "snapshots" /
                                snapshot["data"]["snapshot_id"] / "refmap.json")
                 refmap = json.loads(refmap_path.read_text())
                 entry = refmap["inner"]["@" + old_ref.split(":")[-1]]

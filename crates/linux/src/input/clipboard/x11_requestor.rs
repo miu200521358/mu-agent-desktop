@@ -16,7 +16,7 @@ use super::x11_read::{Converted, Fault, Requestor};
 use crate::system::x11::{self, fault_of_connect};
 
 const POLL_PAUSE: Duration = Duration::from_millis(1);
-const PROPERTY_NAME: &str = "AGENT_DESKTOP_CLIPBOARD";
+const PROPERTY_NAME: &str = "MU_AGENT_DESKTOP_CLIPBOARD";
 const WORDS_PER_PROPERTY_READ: u32 = (MAX_PNG_INPUT_BYTES / 4 + 1024) as u32;
 
 pub(crate) struct X11Requestor {

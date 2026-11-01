@@ -79,7 +79,7 @@ pub(super) fn to_wide(path: &Path) -> Vec<u16> {
 /// spawn opts a lease handle into per spawn and clears again so no fixture
 /// or unrelated child can outlive the process holding the lock. Test-only:
 /// no production call site exists yet in this crate's own process (the
-/// PowerShell harness that eventually spawns `agent-desktop.exe` with the
+/// PowerShell harness that eventually spawns `mu-agent-desktop.exe` with the
 /// lease made inheritable does so through its own native call, not through
 /// this Rust surface), but the mechanism this primitive wraps is exactly
 /// what that spawn wrapper needs, so it is proven here.

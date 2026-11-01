@@ -158,6 +158,7 @@ mod windows_only {
         let filter = WindowFilter {
             focused_only: true,
             app: None,
+            cloaked_window: None,
         };
 
         let focused = forced_foreground::with(fixture.handle(), || {
@@ -224,6 +225,7 @@ mod windows_only {
         let filter = WindowFilter {
             focused_only: false,
             app: Some("agent-desktop-no-such-application.exe".to_string()),
+            cloaked_window: None,
         };
         let outcome = force_window_not_found::with(FORCED_RACES, || {
             list_windows_live(&filter, deadline(10_000))

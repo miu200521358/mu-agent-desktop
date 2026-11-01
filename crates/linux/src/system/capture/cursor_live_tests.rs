@@ -101,7 +101,7 @@ fn a_cursor_overlay_does_not_cover_or_contaminate_window_capture() {
     .expect("the tool's overlay must not block capture");
     app_pixels(&image, expected);
     let oracle = std::process::Command::new("xwininfo")
-        .args(["-name", "agent-desktop cursor overlay"])
+        .args(["-name", "mu-agent-desktop cursor overlay"])
         .output()
         .expect("independent overlay oracle");
     assert!(

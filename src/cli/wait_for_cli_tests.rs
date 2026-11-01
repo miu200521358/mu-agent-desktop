@@ -61,7 +61,7 @@ fn short_w_flag_maps_to_wait_for() {
     );
     assert_eq!(cli.post_action_wait.wait_timeout, None);
     assert_eq!(
-        crate::build_wait_selector(&cli)
+        crate::cli::build_wait_selector(&cli)
             .expect("selector is valid")
             .expect("selector is present")
             .timeout_ms,
@@ -88,14 +88,14 @@ fn wait_timeout_without_selector_is_rejected_before_dispatch() {
     let cli = Cli::try_parse_from(["agent-desktop", "--wait-timeout", "5000", "snapshot"])
         .expect("syntax parses before semantic validation");
 
-    let error = crate::build_wait_selector(&cli)
+    let error = crate::cli::build_wait_selector(&cli)
         .expect_err("an unused wait timeout must not be silently ignored");
     assert_eq!(error.code(), "INVALID_ARGS");
 }
 
 #[test]
 fn validate_rejects_unsupported_command() {
-    let err = crate::validate_wait_for_command(
+    let err = crate::cli::validate_wait_for_command(
         &command(&["find", "--role", "button"]),
         &selector("button:OK"),
     )
@@ -106,10 +106,10 @@ fn validate_rejects_unsupported_command() {
 #[test]
 fn validate_rejects_match_everything_selector_before_dispatch() {
     let click = command(&["click", "@e1"]);
-    let err = crate::validate_wait_for_command(&click, &selector(""))
+    let err = crate::cli::validate_wait_for_command(&click, &selector(""))
         .expect_err("empty selector must be rejected before the action runs");
     assert_eq!(err.code(), "INVALID_ARGS");
-    assert!(crate::validate_wait_for_command(&click, &selector(":")).is_err());
+    assert!(crate::cli::validate_wait_for_command(&click, &selector(":")).is_err());
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn validate_accepts_supported_command_with_constraining_selector() {
         command(&["hover", "@e1"]),
         command(&["drag", "--from", "@e1", "--to", "@e2"]),
     ] {
-        assert!(crate::validate_wait_for_command(&supported, &selector(":Saved!")).is_ok());
+        assert!(crate::cli::validate_wait_for_command(&supported, &selector(":Saved!")).is_ok());
     }
 }
 

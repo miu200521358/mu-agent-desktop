@@ -122,8 +122,8 @@ fn a_travel_behind_a_flourish_is_answered_without_waiting_the_flourish_out() {
 /// runs on one test thread: its tests share one desktop and one oracle colour,
 /// so they could never have run beside each other anyway.
 fn with_state_root<T>(scratch: &Scratch, measure: impl FnOnce() -> T) -> T {
-    unsafe { std::env::set_var("AGENT_DESKTOP_HOME", &scratch.root) };
+    unsafe { std::env::set_var("MU_AGENT_DESKTOP_HOME", &scratch.root) };
     let measured = measure();
-    unsafe { std::env::remove_var("AGENT_DESKTOP_HOME") };
+    unsafe { std::env::remove_var("MU_AGENT_DESKTOP_HOME") };
     measured
 }

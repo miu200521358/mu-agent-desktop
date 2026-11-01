@@ -90,6 +90,15 @@ impl ObservationOps for WindowsAdapter {
         crate::tree::resolve::resolve_element_strict(entry, deadline)
     }
 
+    fn resolve_element_strict_with_filter(
+        &self,
+        entry: &RefEntry,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<NativeHandle, AdapterError> {
+        crate::tree::resolve::resolve_element_strict_with_filter(entry, filter, deadline)
+    }
+
     fn resolve_locator_anchor(
         &self,
         entry: &RefEntry,
@@ -193,6 +202,14 @@ impl ObservationOps for WindowsAdapter {
         crate::system::window::window_ops::list_windows_live(filter, deadline)
     }
 
+    fn list_windows_with_filter(
+        &self,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<Vec<WindowInfo>, AdapterError> {
+        self.list_windows(filter, deadline)
+    }
+
     fn list_apps(&self, deadline: Deadline) -> Result<Vec<AppInfo>, AdapterError> {
         crate::system::app_ops::list_apps_live(deadline)
     }
@@ -208,6 +225,20 @@ impl ObservationOps for WindowsAdapter {
         deadline: Deadline,
     ) -> Result<Vec<SurfaceInfo>, AdapterError> {
         crate::tree::surface_inventory::list_surfaces_for_process(process, deadline)
+    }
+
+    fn list_surfaces_with_filter(
+        &self,
+        process: ProcessIdentity,
+        filter: &WindowFilter,
+        deadline: Deadline,
+    ) -> Result<Vec<SurfaceInfo>, AdapterError> {
+        if let Some(target) = filter.cloaked_window {
+            return crate::tree::surface_inventory::list_surfaces_for_window(
+                process, target, filter, deadline,
+            );
+        }
+        self.list_surfaces(process, deadline)
     }
 
     /// App-less shell-surface resolution: the read-only half of the shell

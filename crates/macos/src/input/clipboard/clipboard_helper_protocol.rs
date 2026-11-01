@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 
 pub(crate) const HELPER_BASENAME: &str = "agent-desktop-macos-helper";
 pub(crate) const PROTOCOL_VERSION: &str = "1";
-pub(crate) const BUILD_IDENTITY: &str = env!("AGENT_DESKTOP_MACOS_HELPER_BUILD_ID");
+pub(crate) const BUILD_IDENTITY: &str = env!("MU_AGENT_DESKTOP_MACOS_HELPER_BUILD_ID");
 pub(crate) const OUTPUT_FD: &str = "1";
 pub(crate) const MAX_HEADER_BYTES: usize = 16 * 1024;
 pub(crate) const MAX_RESPONSE_BYTES: usize =

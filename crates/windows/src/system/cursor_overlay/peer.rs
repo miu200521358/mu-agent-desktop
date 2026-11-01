@@ -24,7 +24,7 @@
 //! tool's own binary, so the server's image is checked too.
 //!
 //! That server-side image check is against the file stem, so any same-user
-//! `agent-desktop.exe` at any path passes it. Deliberate, and settled here so
+//! `mu-agent-desktop.exe` at any path passes it. Deliberate, and settled here so
 //! the question is not re-filed. The only strengthening that is not theatre —
 //! demanding the server's full image path equal the client's `current_exe()` —
 //! breaks two things that are not misuse. A debug build legitimately reaches a

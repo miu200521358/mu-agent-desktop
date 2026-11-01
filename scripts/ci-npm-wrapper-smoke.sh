@@ -23,7 +23,7 @@ digest() {
   fi
 }
 
-SOURCE=target/release/agent-desktop
+SOURCE=target/release/mu-agent-desktop
 HELPER_SOURCE="target/release/${HELPER_NAME}"
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/agent-desktop-npm.XXXXXX")
 PACKAGE_DIR="$WORK/package"

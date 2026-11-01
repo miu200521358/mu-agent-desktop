@@ -5,11 +5,11 @@ use super::owner_serve::serve;
 use super::owner_wire::claim;
 use crate::input::clipboard::payload::GENERATION;
 
-pub(crate) const MARKER_ENV: &str = "AGENT_DESKTOP_SELECTION_OWNER";
-pub(crate) const BUILD_IDENTITY_ENV: &str = "AGENT_DESKTOP_SELECTION_BUILD";
-pub(crate) const PAYLOAD_FD_ENV: &str = "AGENT_DESKTOP_SELECTION_PAYLOAD_FD";
-pub(crate) const DISPLAY_ENV: &str = "AGENT_DESKTOP_SELECTION_DISPLAY";
-pub(crate) const NONCE_ENV: &str = "AGENT_DESKTOP_SELECTION_NONCE";
+pub(crate) const MARKER_ENV: &str = "MU_AGENT_DESKTOP_SELECTION_OWNER";
+pub(crate) const BUILD_IDENTITY_ENV: &str = "MU_AGENT_DESKTOP_SELECTION_BUILD";
+pub(crate) const PAYLOAD_FD_ENV: &str = "MU_AGENT_DESKTOP_SELECTION_PAYLOAD_FD";
+pub(crate) const DISPLAY_ENV: &str = "MU_AGENT_DESKTOP_SELECTION_DISPLAY";
+pub(crate) const NONCE_ENV: &str = "MU_AGENT_DESKTOP_SELECTION_NONCE";
 
 const EXIT_OK: i32 = 0;
 const EXIT_FAILED: i32 = 1;

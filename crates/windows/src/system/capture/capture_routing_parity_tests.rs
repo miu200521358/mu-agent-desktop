@@ -34,7 +34,7 @@ fn clipboard_image_default_path_travels_private_seam_reparse_and_owner() {
         install_windows_private_file();
         let adapter = WindowsAdapter::new();
         let home = HomeIsolation::enter("agent-desktop-routing-home");
-        let agent = home.path().join(".agent-desktop");
+        let agent = home.path().join(".mu-agent-desktop");
         let elsewhere = home.path().join("elsewhere");
         std::fs::create_dir_all(&elsewhere).expect("elsewhere");
         std::fs::create_dir_all(&agent).expect("agent-desktop");

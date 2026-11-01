@@ -52,6 +52,7 @@ fn a_typed_popup_preserves_its_window_and_an_unclassified_popup_keeps_it_listed(
     let filter = WindowFilter {
         app: Some(app),
         focused_only: false,
+        cloaked_window: None,
     };
     let registry =
         crate::system::registry::read_registry_for(rig.bus(), Some(pid), deadline()).unwrap();

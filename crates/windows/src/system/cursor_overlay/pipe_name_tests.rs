@@ -33,7 +33,11 @@ fn a_different_session_resolves_to_a_different_name() {
 fn a_different_state_root_resolves_to_a_different_name() {
     assert_ne!(
         pipe_name(root(), "s0000001", None),
-        pipe_name(Path::new(r"D:\elsewhere\.agent-desktop"), "s0000001", None)
+        pipe_name(
+            Path::new(r"D:\elsewhere\.mu-agent-desktop"),
+            "s0000001",
+            None
+        )
     );
 }
 
@@ -169,7 +173,7 @@ fn naming_no_agent_leaves_the_original_endpoint_untouched() {
 
     assert!(
         !bare
-            .trim_start_matches(r"\\.\pipe\agent-desktop-cursor-")
+            .trim_start_matches(r"\\.\pipe\mu-agent-desktop-cursor-")
             .contains('-'),
         "an agent-less endpoint must carry one segment, got {bare}"
     );
@@ -185,7 +189,7 @@ fn an_agent_named_like_its_session_does_not_repeat_the_session_segment() {
         .next()
         .expect("an agent endpoint has a trailing segment");
     let head = name
-        .trim_start_matches(r"\\.\pipe\agent-desktop-cursor-")
+        .trim_start_matches(r"\\.\pipe\mu-agent-desktop-cursor-")
         .split('-')
         .next()
         .expect("an agent endpoint has a leading segment");

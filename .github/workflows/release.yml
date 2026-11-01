@@ -145,7 +145,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          for FILE in agent-desktop agent-desktop-linux-clipboard-owner; do
+          for FILE in mu-agent-desktop agent-desktop-linux-clipboard-owner; do
             scripts/check-elf-glibc-floor.sh "target/${{ matrix.target }}/release/${FILE}" "${GLIBC_FLOOR}"
           done
 
@@ -154,7 +154,7 @@ jobs:
         shell: bash
         run: |
           LIMIT=$((15 * 1024 * 1024))
-          for FILE in agent-desktop agent-desktop-linux-clipboard-owner; do
+          for FILE in mu-agent-desktop agent-desktop-linux-clipboard-owner; do
             SIZE=$(stat -c%s "target/${{ matrix.target }}/release/${FILE}")
             echo "${FILE} size: ${SIZE} bytes"
             if [ "$SIZE" -gt "$LIMIT" ]; then
@@ -166,10 +166,10 @@ jobs:
       - name: Check binary size (macOS)
         if: runner.os == 'macOS'
         run: |
-          SIZE=$(stat -f%z target/${{ matrix.target }}/release/agent-desktop)
+          SIZE=$(stat -f%z target/${{ matrix.target }}/release/mu-agent-desktop)
           HELPER_SIZE=$(stat -f%z target/${{ matrix.target }}/release/agent-desktop-macos-helper)
           LIMIT=$((15 * 1024 * 1024))
-          echo "Binary size: $(du -sh target/${{ matrix.target }}/release/agent-desktop | cut -f1)"
+          echo "Binary size: $(du -sh target/${{ matrix.target }}/release/mu-agent-desktop | cut -f1)"
           echo "Helper size: $(du -sh target/${{ matrix.target }}/release/agent-desktop-macos-helper | cut -f1)"
           if [ "$SIZE" -gt "$LIMIT" ] || [ "$HELPER_SIZE" -gt "$LIMIT" ]; then
             echo "FAIL: shipped executable exceeds 15MB limit (binary=${SIZE}, helper=${HELPER_SIZE} bytes)"
@@ -180,7 +180,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $binary = Get-Item "target/${{ matrix.target }}/release/agent-desktop.exe"
+          $binary = Get-Item "target/${{ matrix.target }}/release/mu-agent-desktop.exe"
           $limit = 15MB
           Write-Host "Binary size: $($binary.Length) bytes"
           if ($binary.Length -gt $limit) {
@@ -188,26 +188,52 @@ jobs:
             exit 1
           }
 
+      - name: Verify version flag (macOS and Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          EXPECTED_VERSION: ${{ needs.check-release.outputs.version }}
+        run: |
+          EXPECTED_OUTPUT="mu-agent-desktop $EXPECTED_VERSION"
+          ACTUAL_OUTPUT=$(target/${{ matrix.target }}/release/mu-agent-desktop --version)
+          if [ "$ACTUAL_OUTPUT" != "$EXPECTED_OUTPUT" ]; then
+            echo "FAIL: expected '$EXPECTED_OUTPUT', got '$ACTUAL_OUTPUT'"
+            exit 1
+          fi
+
+      - name: Verify version flag (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          EXPECTED_VERSION: ${{ needs.check-release.outputs.version }}
+        run: |
+          $expectedOutput = "mu-agent-desktop $env:EXPECTED_VERSION"
+          $actualOutput = & "target/${{ matrix.target }}/release/mu-agent-desktop.exe" --version
+          if ($LASTEXITCODE -ne 0 -or ($actualOutput -join "`n") -ne $expectedOutput) {
+            Write-Host "FAIL: expected '$expectedOutput', got '$actualOutput'"
+            exit 1
+          }
+
       - name: Smoke-run the built binary (macOS)
         if: runner.os == 'macOS'
         run: |
-          OUTPUT=$(target/${{ matrix.target }}/release/agent-desktop version)
+          OUTPUT=$(target/${{ matrix.target }}/release/mu-agent-desktop version)
           echo "$OUTPUT"
 
       - name: Smoke-run the built binary (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          OUTPUT=$(target/${{ matrix.target }}/release/agent-desktop version)
+          OUTPUT=$(target/${{ matrix.target }}/release/mu-agent-desktop version)
           echo "$OUTPUT"
 
       - name: Smoke-run the built binary (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          & "target/${{ matrix.target }}/release/agent-desktop.exe" version
+          & "target/${{ matrix.target }}/release/mu-agent-desktop.exe" version
           if ($LASTEXITCODE -ne 0) {
-            Write-Host "FAIL: agent-desktop version exited $LASTEXITCODE on the freshly built binary"
+            Write-Host "FAIL: mu-agent-desktop version exited $LASTEXITCODE on the freshly built binary"
             exit $LASTEXITCODE
           }
 
@@ -217,11 +243,15 @@ jobs:
           VERSION: ${{ needs.check-release.outputs.version }}
         run: |
           TARBALL="agent-desktop-v${VERSION}-${{ matrix.target }}.tar.gz"
-          BINARY="target/${{ matrix.target }}/release/agent-desktop"
+          BINARY="target/${{ matrix.target }}/release/mu-agent-desktop"
           HELPER="target/${{ matrix.target }}/release/agent-desktop-macos-helper"
+          ARCHIVE_DIR="$RUNNER_TEMP/agent-desktop-release"
+          mkdir -p "$ARCHIVE_DIR"
+          cp "$BINARY" "$ARCHIVE_DIR/agent-desktop"
+          cp "$HELPER" "$ARCHIVE_DIR/agent-desktop-macos-helper"
           BINARY_SHA=$(shasum -a 256 "$BINARY" | awk '{print $1}')
           HELPER_SHA=$(shasum -a 256 "$HELPER" | awk '{print $1}')
-          tar -czf "${TARBALL}" -C "$(dirname "$BINARY")" agent-desktop agent-desktop-macos-helper
+          tar -czf "${TARBALL}" -C "$ARCHIVE_DIR" agent-desktop agent-desktop-macos-helper
           if [ "$BINARY_SHA" != "$(shasum -a 256 "$BINARY" | awk '{print $1}')" ] || \
              [ "$HELPER_SHA" != "$(shasum -a 256 "$HELPER" | awk '{print $1}')" ]; then
             echo "Release executable changed while packaging" >&2
@@ -243,10 +273,14 @@ jobs:
         run: |
           TARBALL="agent-desktop-v${VERSION}-${{ matrix.target }}.tar.gz"
           DIR="target/${{ matrix.target }}/release"
-          BINARY_SHA=$(sha256sum "${DIR}/agent-desktop" | awk '{print $1}')
+          BINARY_SHA=$(sha256sum "${DIR}/mu-agent-desktop" | awk '{print $1}')
           HELPER_SHA=$(sha256sum "${DIR}/agent-desktop-linux-clipboard-owner" | awk '{print $1}')
-          tar -czf "${TARBALL}" -C "${DIR}" agent-desktop agent-desktop-linux-clipboard-owner
-          if [ "$BINARY_SHA" != "$(sha256sum "${DIR}/agent-desktop" | awk '{print $1}')" ] || \
+          ARCHIVE_DIR="$RUNNER_TEMP/agent-desktop-release"
+          mkdir -p "$ARCHIVE_DIR"
+          cp "${DIR}/mu-agent-desktop" "$ARCHIVE_DIR/agent-desktop"
+          cp "${DIR}/agent-desktop-linux-clipboard-owner" "$ARCHIVE_DIR/agent-desktop-linux-clipboard-owner"
+          tar -czf "${TARBALL}" -C "$ARCHIVE_DIR" agent-desktop agent-desktop-linux-clipboard-owner
+          if [ "$BINARY_SHA" != "$(sha256sum "${DIR}/mu-agent-desktop" | awk '{print $1}')" ] || \
              [ "$HELPER_SHA" != "$(sha256sum "${DIR}/agent-desktop-linux-clipboard-owner" | awk '{print $1}')" ]; then
             echo "Release executable changed while packaging" >&2
             exit 1
@@ -261,7 +295,11 @@ jobs:
           VERSION: ${{ needs.check-release.outputs.version }}
         run: |
           $tarball = "agent-desktop-v${env:VERSION}-${{ matrix.target }}.tar.gz"
-          & tar -czf $tarball -C "target/${{ matrix.target }}/release" agent-desktop.exe
+          $binary = "target/${{ matrix.target }}/release/mu-agent-desktop.exe"
+          $archiveDir = Join-Path $env:RUNNER_TEMP 'agent-desktop-release'
+          New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null
+          Copy-Item -LiteralPath $binary -Destination (Join-Path $archiveDir 'agent-desktop.exe') -Force
+          & tar -czf $tarball -C $archiveDir agent-desktop.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $listing = @(@(& tar -tzf $tarball) | Sort-Object)
           if (($listing.Count -ne 1) -or ($listing[0] -ne 'agent-desktop.exe')) {

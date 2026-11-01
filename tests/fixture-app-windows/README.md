@@ -2,7 +2,7 @@
 
 A WinForms application built and controlled by the Windows live E2E harness
 (`tests/e2e-windows/`). It exists so the harness can drive the real
-`agent-desktop.exe` binary against a real window and verify every effect by
+`mu-agent-desktop.exe` binary against a real window and verify every effect by
 independent re-observation of the fixture, rather than by the command's own
 `ok:true`.
 

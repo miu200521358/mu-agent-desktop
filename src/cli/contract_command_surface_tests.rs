@@ -53,6 +53,7 @@ const COMMAND_SPECIFIC_TESTS: &[&str] = &[
     "status",
     "trace",
     "wait",
+    "window-diagnostic",
 ];
 
 const SHARED_REF_ACTION_TESTS: &[&str] = &[
@@ -152,11 +153,11 @@ fn every_cli_subcommand_has_explicit_test_coverage_classification() {
 }
 
 #[test]
-fn macos_capability_count_includes_restored_notifications() {
+fn cli_command_count_includes_window_diagnostic() {
     let commands = cli_command_names();
     assert_eq!(
         commands.len(),
-        60,
+        61,
         "the published CLI command count changed; update capability documentation"
     );
 }

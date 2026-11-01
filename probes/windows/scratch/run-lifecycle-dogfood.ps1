@@ -4,7 +4,7 @@
     Sub-phase 2.9 U9 system-lifecycle dogfood runner.
 
 .DESCRIPTION
-    Drives target/release/agent-desktop.exe against repo-controlled targets
+    Drives target/release/mu-agent-desktop.exe against repo-controlled targets
     (Notepad, Explorer scratch folder). Judges by JSON envelope shapes PLUS
     independent observation - never ok:true alone. Assert-Foreground brackets
     headed press; clipboard/cursor restore; PID-tracked scratch only;
@@ -32,7 +32,7 @@ Initialize-LifecycleNative
 
 Add-Type -AssemblyName System.Windows.Forms | Out-Null
 
-if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\agent-desktop.exe' }
+if (-not $Binary) { $Binary = Join-Path $script:RepoRoot 'target\release\mu-agent-desktop.exe' }
 if (-not (Test-Path -LiteralPath $Binary)) { throw "release binary not found at $Binary" }
 $script:Binary = (Resolve-Path -LiteralPath $Binary).ProviderPath
 if (-not $OutDir) {

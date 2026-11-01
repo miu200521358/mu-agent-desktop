@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 
 fn host_identity(directory: &std::path::Path) -> String {
     use std::os::unix::fs::MetadataExt;
-    let executable = std::path::Path::new(env!("CARGO_BIN_EXE_agent-desktop"));
+    let executable = std::path::Path::new(env!("CARGO_BIN_EXE_mu-agent-desktop"));
     let metadata = std::fs::metadata(executable).unwrap();
     serde_json::json!({
         "protocol": 1,
@@ -75,11 +75,11 @@ fn socket_host_survives_a_bad_client_and_serves_separate_invocations() {
     let directory = scratch.0.clone();
     let socket = directory.join("h.sock");
     let mut child = HostProcess(
-        Command::new(env!("CARGO_BIN_EXE_agent-desktop"))
-            .env("AGENT_DESKTOP_INTERNAL_COMMAND_HOST", "1")
-            .env("AGENT_DESKTOP_INTERNAL_HOST_SOCKET", &socket)
+        Command::new(env!("CARGO_BIN_EXE_mu-agent-desktop"))
+            .env("MU_AGENT_DESKTOP_INTERNAL_COMMAND_HOST", "1")
+            .env("MU_AGENT_DESKTOP_INTERNAL_HOST_SOCKET", &socket)
             .env_remove("AGENT_DESKTOP_SESSION")
-            .env("AGENT_DESKTOP_HOME", &directory)
+            .env("MU_AGENT_DESKTOP_HOME", &directory)
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
@@ -182,12 +182,12 @@ fn default_cli_starts_and_reuses_its_host() {
     let mut hash = std::collections::hash_map::DefaultHasher::new();
     host_identity(&directory).hash(&mut hash);
     let socket = std::env::temp_dir().join(format!(
-        "agent-desktop-host-{}/{:016x}.sock",
+        "mu-agent-desktop-host-{}/{:016x}.sock",
         unsafe { libc::geteuid() },
         hash.finish(),
     ));
     let invoke = || {
-        let mut command = Command::new(env!("CARGO_BIN_EXE_agent-desktop"));
+        let mut command = Command::new(env!("CARGO_BIN_EXE_mu-agent-desktop"));
         unsafe {
             command.pre_exec(|| {
                 libc::umask(0);
@@ -197,9 +197,9 @@ fn default_cli_starts_and_reuses_its_host() {
         command
             .arg("version")
             .env_remove("AGENT_DESKTOP_INTERNAL_HOST_CLIENT")
-            .env_remove("AGENT_DESKTOP_INTERNAL_COMMAND_HOST")
+            .env_remove("MU_AGENT_DESKTOP_INTERNAL_COMMAND_HOST")
             .env_remove("AGENT_DESKTOP_SESSION")
-            .env("AGENT_DESKTOP_HOME", &directory)
+            .env("MU_AGENT_DESKTOP_HOME", &directory)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
@@ -285,10 +285,10 @@ fn unread_reply_exits_without_shutdown_flush_or_next_dispatch() {
     );
     let output: OwnedFd = sender.into();
     let scratch = TestDir::new();
-    let mut child = Command::new(env!("CARGO_BIN_EXE_agent-desktop"))
-        .env("AGENT_DESKTOP_INTERNAL_COMMAND_HOST", "1")
+    let mut child = Command::new(env!("CARGO_BIN_EXE_mu-agent-desktop"))
+        .env("MU_AGENT_DESKTOP_INTERNAL_COMMAND_HOST", "1")
         .env_remove("AGENT_DESKTOP_SESSION")
-        .env("AGENT_DESKTOP_HOME", &scratch.0)
+        .env("MU_AGENT_DESKTOP_HOME", &scratch.0)
         .stdin(Stdio::piped())
         .stdout(Stdio::from(output))
         .stderr(Stdio::piped())

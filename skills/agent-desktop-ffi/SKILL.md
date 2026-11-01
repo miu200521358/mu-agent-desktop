@@ -141,7 +141,7 @@ are not exposed over the ABI. A bare `@eN` ref returns
   a manifest with `trace: on`, created by `session start` (or an equivalent manifest
   on disk) before the adapter is created. `ad_adapter_create_with_session` alone
   writes nothing. Each OS process appends to one segment,
-  `~/.agent-desktop/sessions/<id>/trace/<pid>-<procTs>.jsonl`, and a long-lived host
+  `~/.mu-agent-desktop/sessions/<id>/trace/<pid>-<procTs>.jsonl`, and a long-lived host
   reuses it. `ad_trace_show` (JSON envelope) and `ad_trace_export` (self-contained
   HTML file) read the adapter session's merged timeline; `limit` `-1` = CLI default.
 

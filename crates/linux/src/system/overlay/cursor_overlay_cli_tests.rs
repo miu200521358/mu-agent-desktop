@@ -21,7 +21,7 @@ fn cli(args: &[&str]) -> Value {
 
 fn owned(connection: &RustConnection, root: Window, session: &str) -> Vec<Window> {
     let owner = connection
-        .intern_atom(false, b"_AGENT_DESKTOP_CURSOR_OWNER")
+        .intern_atom(false, b"_MU_AGENT_DESKTOP_CURSOR_OWNER")
         .unwrap()
         .reply()
         .unwrap()

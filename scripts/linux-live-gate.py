@@ -231,7 +231,7 @@ def worker(manifest_path, tier, shard):
     directory = manifest_path.parent / tier
     save(directory / f"session-{shard}.json", {key: os.environ.get(key) for key in (
         "DISPLAY", "DBUS_SESSION_BUS_ADDRESS", "XDG_RUNTIME_DIR",
-        "AGENT_DESKTOP_PRIVATE_SESSION", "AGENT_DESKTOP_HOME", "TMPDIR")})
+        "AGENT_DESKTOP_PRIVATE_SESSION", "MU_AGENT_DESKTOP_HOME", "TMPDIR")})
     rows = []
     for index, task in enumerate(manifest["shards"][tier][shard]):
         if STOPPING:
@@ -323,8 +323,8 @@ def main():
     os.chdir(ROOT)
     base = Path(
         os.environ.get("AGENT_DESKTOP_SESSION_BASE")
-        or (Path(os.environ["XDG_RUNTIME_DIR"]) / "agent-desktop-sessions"
-            if os.environ.get("XDG_RUNTIME_DIR") else Path(f"/tmp/agent-desktop-sessions-{os.getuid()}"))
+        or (Path(os.environ["XDG_RUNTIME_DIR"]) / "mu-agent-desktop-sessions"
+            if os.environ.get("XDG_RUNTIME_DIR") else Path(f"/tmp/mu-agent-desktop-sessions-{os.getuid()}"))
     )
     if args.output is None or not (args.merge or args.list):
         base.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -360,12 +360,12 @@ def main():
         shutil.copy2(binary, frozen)
         profile = binary.parent.parent
         artifacts = {}
-        for name in ("agent-desktop", "agent-desktop-linux-clipboard-owner"):
+        for name in ("mu-agent-desktop", "agent-desktop-linux-clipboard-owner"):
             target = output / "debug" / name
             shutil.copy2(profile / name, target)
             artifacts[str(target)] = hashlib.sha256(target.read_bytes()).hexdigest()
         manifest = dict(binary=str(frozen), binary_sha256=hashlib.sha256(frozen.read_bytes()).hexdigest(),
-                        cli=str(output / "debug/agent-desktop"), artifacts=artifacts,
+                        cli=str(output / "debug/mu-agent-desktop"), artifacts=artifacts,
                         source_sha256=source_hash(), tests=names, ignored=sorted(ignored),
                         selection=dict(modules=args.module, ignored_only=args.ignored_only),
                         timeout=args.timeout, shards=plan(names, ignored, args.jobs))

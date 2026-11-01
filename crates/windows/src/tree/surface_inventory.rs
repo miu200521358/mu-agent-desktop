@@ -1,5 +1,6 @@
 use agent_desktop_core::{
-    AdapterError, Deadline, ErrorCode, ProcessId, ProcessIdentity, SnapshotSurface, SurfaceInfo,
+    AdapterError, CloakedWindowTarget, Deadline, ErrorCode, ProcessId, ProcessIdentity,
+    SnapshotSurface, SurfaceInfo, WindowFilter,
 };
 
 use super::automation::root_from_hwnd;
@@ -54,6 +55,51 @@ pub(crate) fn list_surfaces_for_process(
         surfaces.push(menu_surface(&menu)?);
     }
     Ok(surfaces)
+}
+
+pub(crate) fn list_surfaces_for_window(
+    process: ProcessIdentity,
+    target: CloakedWindowTarget,
+    filter: &WindowFilter,
+    deadline: Deadline,
+) -> Result<Vec<SurfaceInfo>, AdapterError> {
+    if process.pid.get() != target.pid || filter.cloaked_window != Some(target) {
+        return Err(AdapterError::new(
+            ErrorCode::StaleRef,
+            "Surface query does not match the one-command window permission",
+        ));
+    }
+    require_live_process(&process)?;
+    let target_id = target.window_id();
+    let mut candidates = crate::system::window::window_ops::list_windows_live(filter, deadline)?
+        .into_iter()
+        .filter(|window| {
+            window.id == target_id
+                && window.pid == target.pid
+                && window.process_instance.as_deref() == Some(process.instance.as_str())
+        })
+        .collect::<Vec<_>>();
+    if candidates.len() != 1 {
+        return Err(AdapterError::new(
+            if candidates.is_empty() {
+                ErrorCode::WindowNotFound
+            } else {
+                ErrorCode::AmbiguousTarget
+            },
+            "The exact permitted window did not resolve uniquely",
+        ));
+    }
+    let window = candidates.remove(0);
+    let handle =
+        crate::system::window::window_ops::parse_window_id(&window.id)? as usize as WindowHandle;
+    require_live_process(&process)?;
+    let observed = ObservedWindow {
+        handle,
+        title: Some(window.title),
+        foreground: is_foreground_window(handle),
+        sheet: is_modal_sheet(handle, deadline),
+    };
+    Ok(surfaces_of(vec![observed]))
 }
 
 /// The caller's generation token must still be the process at `pid` right

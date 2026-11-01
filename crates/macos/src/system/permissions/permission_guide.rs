@@ -7,19 +7,19 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
-const STEPS_ENV: &str = "AGENT_DESKTOP_PERMISSION_GUIDE";
-const HOST_ENV: &str = "AGENT_DESKTOP_PERMISSION_GUIDE_HOST";
-const LOCK_ENV: &str = "AGENT_DESKTOP_PERMISSION_GUIDE_LOCK";
-const PROBE_ENV: &str = "AGENT_DESKTOP_PERMISSION_GUIDE_PROBE";
-const LOCK_NAME: &str = "agent-desktop-permission-guide.lock";
+const STEPS_ENV: &str = "MU_AGENT_DESKTOP_PERMISSION_GUIDE";
+const HOST_ENV: &str = "MU_AGENT_DESKTOP_PERMISSION_GUIDE_HOST";
+const LOCK_ENV: &str = "MU_AGENT_DESKTOP_PERMISSION_GUIDE_LOCK";
+const PROBE_ENV: &str = "MU_AGENT_DESKTOP_PERMISSION_GUIDE_PROBE";
+const LOCK_NAME: &str = "mu-agent-desktop-permission-guide.lock";
 const ACCESSIBILITY: u8 = 1;
 const SCREEN_RECORDING: u8 = 2;
 const PROBE_TIMEOUT: Duration = Duration::from_secs(3);
 const MAX_ANCESTORS: usize = 64;
 const COMMAND_HOST_ENVS: [&str; 3] = [
-    "AGENT_DESKTOP_INTERNAL_COMMAND_HOST",
-    "AGENT_DESKTOP_INTERNAL_HOST_SOCKET",
-    "AGENT_DESKTOP_INTERNAL_HOST_CLIENT",
+    "MU_AGENT_DESKTOP_INTERNAL_COMMAND_HOST",
+    "MU_AGENT_DESKTOP_INTERNAL_HOST_SOCKET",
+    "MU_AGENT_DESKTOP_INTERNAL_HOST_CLIENT",
 ];
 
 pub(crate) fn start() -> Result<&'static str, AdapterError> {

@@ -1,7 +1,7 @@
 # Windows live E2E harness
 
 PowerShell 5.1, no Python, no POSIX shell. Drives the real, staged, hashed
-`agent-desktop.exe` against the real WinForms fixture (`tests/fixture-app-windows`)
+`mu-agent-desktop.exe` against the real WinForms fixture (`tests/fixture-app-windows`)
 and asserts every effect by independent re-observation, never by a command's
 own `ok:true`.
 
@@ -58,7 +58,7 @@ Every file stays under the 400-line cap that `scripts/check-e2e-windows-contract
 powershell -NoProfile -File tests\e2e-windows\selftest\Invoke-U7SelfTests.ps1
 
 # Harness-core self-tests (isolation, immutable staging, bounded spawn, lease
-# adoption): needs a real desktop and a built target\release\agent-desktop.exe
+# adoption): needs a real desktop and a built target\release\mu-agent-desktop.exe
 # (or -AgentDesktopBinary <path>); acquires the real desktop lease, so it
 # cannot run on a hosted runner.
 powershell -NoProfile -File tests\e2e-windows\selftest\Invoke-U6SelfTests.ps1
@@ -69,7 +69,7 @@ powershell -NoProfile -File tests\e2e-windows\Run-E2E.ps1 -SelfTestSeedFailure
 
 # The live suite (local box only - acquires the desktop-exclusivity lease).
 # Build both artifacts first; -AgentDesktopBinary and -FixtureBinary override
-# the default paths target\release\agent-desktop.exe and
+# the default paths target\release\mu-agent-desktop.exe and
 # tests\fixture-app-windows\build\AgentDeskFixture.exe.
 cargo build --locked --release -p agent-desktop
 powershell -NoProfile -File tests\fixture-app-windows\build.ps1

@@ -6,8 +6,11 @@ mod support;
 #[path = "cli_parse_error_tests.rs"]
 mod parse_error_tests;
 
+#[path = "cli_process_legacy_state_root_tests.rs"]
+mod legacy_state_root_tests;
+
 fn binary() -> Command {
-    Command::new(env!("CARGO_BIN_EXE_agent-desktop"))
+    Command::new(env!("CARGO_BIN_EXE_mu-agent-desktop"))
 }
 
 #[test]
@@ -54,7 +57,7 @@ fn version_has_exact_package_identity() {
 fn relative_state_root_env_fails_version_before_dispatch() {
     let output = binary()
         .arg("version")
-        .env("AGENT_DESKTOP_HOME", "relative/not-absolute")
+        .env("MU_AGENT_DESKTOP_HOME", "relative/not-absolute")
         .output()
         .expect("binary starts");
     let envelope: serde_json::Value =
@@ -70,7 +73,7 @@ fn relative_state_root_env_fails_version_before_dispatch() {
 fn empty_state_root_env_fails_session_start_before_dispatch() {
     let output = binary()
         .args(["session", "start"])
-        .env("AGENT_DESKTOP_HOME", "")
+        .env("MU_AGENT_DESKTOP_HOME", "")
         .output()
         .expect("binary starts");
     let envelope: serde_json::Value =
@@ -94,7 +97,7 @@ fn valid_absolute_state_root_env_allows_version_and_creates_nothing() {
     ));
     let output = binary()
         .arg("version")
-        .env("AGENT_DESKTOP_HOME", &dir)
+        .env("MU_AGENT_DESKTOP_HOME", &dir)
         .output()
         .expect("binary starts");
     let envelope: serde_json::Value =
@@ -113,7 +116,7 @@ fn state_root_env_redirects_session_start_writes() {
     let dir = unique_temp_dir("cli-state-root-session");
     let output = binary()
         .args(["session", "start"])
-        .env("AGENT_DESKTOP_HOME", &dir)
+        .env("MU_AGENT_DESKTOP_HOME", &dir)
         .output()
         .expect("binary starts");
     let envelope: serde_json::Value =
@@ -127,7 +130,7 @@ fn state_root_env_redirects_session_start_writes() {
     let manifest = dir.join("sessions").join(session_id).join("session.json");
     assert!(
         manifest.is_file(),
-        "session manifest must land under the AGENT_DESKTOP_HOME root"
+        "session manifest must land under the MU_AGENT_DESKTOP_HOME root"
     );
     let _ = std::fs::remove_dir_all(&dir);
 }
@@ -137,7 +140,7 @@ fn status_reports_state_root_env_value_verbatim() {
     let dir = unique_temp_dir("cli-state-root-status");
     let output = binary()
         .arg("status")
-        .env("AGENT_DESKTOP_HOME", &dir)
+        .env("MU_AGENT_DESKTOP_HOME", &dir)
         .output()
         .expect("binary starts");
     let envelope: serde_json::Value =
@@ -150,26 +153,6 @@ fn status_reports_state_root_env_value_verbatim() {
         "status must report the env value verbatim"
     );
     let _ = std::fs::remove_dir_all(&dir);
-}
-
-#[test]
-fn invalid_state_root_env_fails_batch_as_single_envelope() {
-    let output = binary()
-        .args(["batch", "[]"])
-        .env("AGENT_DESKTOP_HOME", "relative/not-absolute")
-        .output()
-        .expect("binary starts");
-    let envelope: serde_json::Value =
-        serde_json::from_slice(&output.stdout).expect("stdout is one JSON envelope");
-
-    assert_eq!(output.status.code(), Some(1));
-    assert_eq!(envelope["ok"], false);
-    assert_eq!(envelope["command"], "batch");
-    assert_eq!(envelope["error"]["code"], "INVALID_ARGS");
-    assert!(
-        envelope.get("data").is_none(),
-        "batch must fail as one error envelope, no entry results"
-    );
 }
 
 #[cfg(target_os = "macos")]
@@ -263,7 +246,7 @@ fn unique_temp_dir(prefix: &str) -> std::path::PathBuf {
 fn start_session_in_dir(dir: &std::path::Path) -> String {
     let mut c = binary();
     c.args(["session", "start", "--no-trace"])
-        .env("AGENT_DESKTOP_HOME", dir);
+        .env("MU_AGENT_DESKTOP_HOME", dir);
     let out = c.output().expect("session start runs");
     let env: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
     env["data"]["session_id"].as_str().unwrap().to_owned()
@@ -274,7 +257,7 @@ fn run_batch(dir: &std::path::Path, cmds: serde_json::Value, extra: &[&str]) -> 
     c.arg("batch")
         .arg(cmds.to_string())
         .args(extra)
-        .env("AGENT_DESKTOP_HOME", dir);
+        .env("MU_AGENT_DESKTOP_HOME", dir);
     let o = c.output().expect("batch runs");
     serde_json::from_slice(&o.stdout).unwrap_or_else(|error| {
         panic!(

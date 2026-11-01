@@ -1,3 +1,3 @@
 function Invoke-VersionLeg {
-    Invoke-Expression 'agent-desktop.exe version'
+    Invoke-Expression 'mu-agent-desktop.exe version'
 }

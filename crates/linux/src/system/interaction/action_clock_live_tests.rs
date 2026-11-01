@@ -73,7 +73,9 @@ Gtk.main()
     for _ in 0..2 {
         assert_eq!(std::fs::read_to_string(&state).unwrap(), "True");
         assert_eq!(rig.open_item_count(), 0);
-        let record = runtime.join("agent-desktop-actions").join(pid.to_string());
+        let record = runtime
+            .join("mu-agent-desktop-actions")
+            .join(pid.to_string());
         let before = std::fs::read(&record).ok();
         let checked = cli(&["check", reference]);
         assert_eq!(checked["ok"], true, "{checked}");

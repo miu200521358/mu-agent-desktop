@@ -208,6 +208,7 @@ fn platform_adapter_exposes_all_capability_methods() {
                 &agent_desktop_core::WindowFilter {
                     focused_only: false,
                     app: None,
+                    cloaked_window: None,
                 },
                 deadline,
             )

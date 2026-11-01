@@ -95,7 +95,7 @@ fn require_owner_in_set(
         return Err(permission_denied(format!(
             "{what} is owned by a foreign principal, not this process's token user, token \
              owner, or an owner-eligible token group; if a different principal owns this path \
-             intentionally, relocate the state root with AGENT_DESKTOP_HOME instead of reusing it"
+             intentionally, relocate the state root with MU_AGENT_DESKTOP_HOME instead of reusing it"
         )));
     }
     Ok(())

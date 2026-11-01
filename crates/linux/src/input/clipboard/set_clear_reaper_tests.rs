@@ -200,7 +200,7 @@ fn live_reaper_startup_failure_reaps_the_claimed_owner_and_refuses_success() {
     );
     let world = World::new("reaper-failure-live");
     let helper = world.helper(&format!(
-        "echo $$ > \"$AGENT_DESKTOP_HOME/pid\"\nexec '{}'",
+        "echo $$ > \"$MU_AGENT_DESKTOP_HOME/pid\"\nexec '{}'",
         owner.display()
     ));
     check_failure(&world, &helper, &display, &X11Server);

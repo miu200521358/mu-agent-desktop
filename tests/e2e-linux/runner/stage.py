@@ -21,9 +21,9 @@ def stage_binary(source: Path, suite_dir: Path, bounded=None) -> Path:
     source = Path(source)
     bin_dir = Path(suite_dir) / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
-    for name, original in ((HELPER_NAME, source.with_name(HELPER_NAME)), ("agent-desktop", source)):
+    for name, original in ((HELPER_NAME, source.with_name(HELPER_NAME)), ("mu-agent-desktop", source)):
         _stage_image(original, bin_dir / name)
-    target = bin_dir / "agent-desktop"
+    target = bin_dir / "mu-agent-desktop"
     bounded = bounded or _load_bounded_process()
     result = bounded.run_bounded([str(target), "--version"], timeout_seconds=15)
     if result.returncode != 0:

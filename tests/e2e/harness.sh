@@ -3,7 +3,7 @@
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 json_tool="$repo/tests/e2e/json_tool.py"
 command_guard="$repo/tests/e2e/guard-command.sh"
-release_bin="${AGENT_DESKTOP_E2E_RELEASE_BIN:-$repo/target/release/agent-desktop}"
+release_bin="${AGENT_DESKTOP_E2E_RELEASE_BIN:-$repo/target/release/mu-agent-desktop}"
 release_ffi="${AGENT_DESKTOP_E2E_RELEASE_FFI:-$repo/target/release-ffi/libagent_desktop_ffi.dylib}"
 release_ffi_helper="${AGENT_DESKTOP_E2E_RELEASE_FFI_HELPER:-$repo/target/release/agent-desktop-macos-helper}"
 host_home="${HOME:-}"
@@ -23,14 +23,14 @@ require_exclusive_acknowledgement() {
 }
 
 acquire_exclusive_lock() {
-    case "${AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" in
+    case "${MU_AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" in
         ''|*[!0-9]*)
             echo "SKIP (blocked): canonical inherited interaction lease FD is missing" >&2
             return 1
             ;;
     esac
     if ! python3 "$repo/tests/e2e/interaction_lock.py" verify \
-        "$AGENT_DESKTOP_INTERACTION_LEASE_FD"; then
+        "$MU_AGENT_DESKTOP_INTERACTION_LEASE_FD"; then
         echo "SKIP (blocked): inherited interaction lease FD is invalid" >&2
         return 1
     fi
@@ -45,7 +45,7 @@ setup_isolated_environment() {
     local label="$1"
     suite_root="$(mktemp -d "/tmp/ad-${label}.XXXXXX")" || return 1
     suite_root="$(cd "$suite_root" && pwd -P)" || return 1
-    printf '%s\n' "$$" > "$suite_root/.agent-desktop-e2e-root"
+    printf '%s\n' "$$" > "$suite_root/.mu-agent-desktop-e2e-root"
     mkdir -p "$suite_root/home" "$suite_root/tmp" "$suite_root/bin" "$suite_root/fixture"
     chmod 700 "$suite_root/tmp"
     export HOME="$suite_root/home"
@@ -64,8 +64,8 @@ cleanup_isolated_environment() {
         return
     fi
     local owner=""
-    if [ -f "$suite_root/.agent-desktop-e2e-root" ]; then
-        owner="$(sed -n '1p' "$suite_root/.agent-desktop-e2e-root" 2>/dev/null)"
+    if [ -f "$suite_root/.mu-agent-desktop-e2e-root" ]; then
+        owner="$(sed -n '1p' "$suite_root/.mu-agent-desktop-e2e-root" 2>/dev/null)"
     fi
     if [ "$owner" = "$$" ]; then
         # The staged binary owns any retained AX objects and inherited lease.

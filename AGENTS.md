@@ -255,10 +255,12 @@ Every command prints one envelope. `docs/json-output.md` holds the full contract
 
 ## Command surface
 
-60 commands spanning App/Window, Observation, Interaction, Scroll, Keyboard, Mouse, Notifications, Clipboard, Wait,
-System (including `session`, `trace`, `skills`) and Batch. 56 of the 60 command names are operational on macOS; the
-four held-input names (`key-down`, `key-up`, `mouse-down`, `mouse-up`) fail closed. Windows and Linux expose the same
-command names. Each platform's limits are in its skill (`skills/agent-desktop-macos/`, `skills/agent-desktop-windows/`,
+61 commands spanning App/Window, Observation, Interaction, Scroll, Keyboard, Mouse, Notifications, Clipboard, Wait,
+System (including `session`, `trace`, `skills`) and Batch. 57 of the 61 command names are operational on at least one platform;
+56 of the 61 command names are operational on macOS. The four held-input names (`key-down`, `key-up`,
+`mouse-down`, `mouse-up`) fail closed on every platform, and `window-diagnostic` returns `PLATFORM_NOT_SUPPORTED` on
+macOS. Windows and Linux expose the same command names. Each platform's limits are in its skill
+(`skills/agent-desktop-macos/`, `skills/agent-desktop-windows/`,
 `skills/agent-desktop-linux/`).
 
 ## Definition of done

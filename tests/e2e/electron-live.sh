@@ -2,7 +2,7 @@
 set -uo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -z "${AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" ]; then
+if [ -z "${MU_AGENT_DESKTOP_INTERACTION_LEASE_FD:-}" ]; then
     exec python3 "$here/interaction_lock.py" run "$0" "$@"
 fi
 # shellcheck source=tests/e2e/harness.sh

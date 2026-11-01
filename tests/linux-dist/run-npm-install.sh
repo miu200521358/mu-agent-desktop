@@ -46,14 +46,14 @@ fi
 ARCHIVE=${matches[0]}
 
 WORK=$(mktemp -d "${AGENT_DESKTOP_PRIVATE_SESSION:-${TMPDIR:-/tmp}}/ad-npm.XXXXXX")
-export AGENT_DESKTOP_HOME="$WORK/state"
+export MU_AGENT_DESKTOP_HOME="$WORK/state"
 export npm_config_cache="$WORK/npm-cache"
 export npm_config_update_notifier=false
 PREFIX="$WORK/prefix"
 SERVE="$WORK/serve"
 DOUBLE="$WORK/double-bin"
 LOG="$WORK/curl.log"
-mkdir -m 700 "$AGENT_DESKTOP_HOME"
+mkdir -m 700 "$MU_AGENT_DESKTOP_HOME"
 mkdir -p "$PREFIX" "$SERVE" "$DOUBLE"
 APP_PID=
 

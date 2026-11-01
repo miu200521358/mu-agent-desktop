@@ -20,7 +20,7 @@ mod test_noop_ops;
 
 use agent_desktop_core::{
     AdapterError, AppError, DeliverySemantics, ErrorCode, SystemOps,
-    context::{CommandContext, WaitSelector},
+    context::CommandContext,
     response::output::{ErrorPayload, Response},
     session::resolve_active_session,
 };
@@ -151,13 +151,22 @@ fn execute(cli: Cli, cmd: Commands) -> Result<serde_json::Value, AppError> {
 
 fn execute_with_deadline(
     cli: Cli,
-    cmd: Commands,
+    mut cmd: Commands,
     deadline: Option<agent_desktop_core::Deadline>,
     baseline: Option<agent_desktop_core::SignalBaseline>,
 ) -> Result<serde_json::Value, AppError> {
     if let Some(deadline) = deadline.filter(|deadline| deadline.is_expired()) {
         return Err(pre_dispatch_error(deadline.timeout_error().into()));
     }
+    if let Commands::WindowDiagnostic(args) = &mut cmd {
+        if args.pid.is_some() && cli.pid.is_some() && args.pid != cli.pid {
+            return Err(AppError::invalid_input(
+                "window-diagnostic --pid conflicts with the global --pid",
+            ));
+        }
+        args.pid = args.pid.or(cli.pid);
+    }
+    let cloaked_target = cli::validate_cloaked_window_options(&cli, &cmd)?;
     cli.visual_debug.validate(&cmd)?;
     agent_desktop_core::validate_state_root_env().map_err(pre_dispatch_error)?;
     match cmd {
@@ -179,7 +188,7 @@ fn execute_with_deadline(
             result.map_err(pre_dispatch_error)
         }
         cmd => {
-            let wait_selector = build_wait_selector(&cli)?;
+            let wait_selector = cli::build_wait_selector(&cli)?;
             let session_id = resolve_active_session(
                 cli.identity.session.as_deref(),
                 std::env::var("AGENT_DESKTOP_SESSION").ok().as_deref(),
@@ -197,6 +206,9 @@ fn execute_with_deadline(
             let mut context = context
                 .with_agent_id(agent_id)
                 .map_err(pre_dispatch_error)?;
+            if let Some(target) = cloaked_target {
+                context = context.with_cloaked_window_target(target);
+            }
             #[cfg(target_os = "macos")]
             if command_host::is_host_process() {
                 context = context.with_pinned_session_namespace();
@@ -206,53 +218,11 @@ fn execute_with_deadline(
             }
             context = context.with_event_baseline(baseline.map(Ok));
             if let Some(wait) = wait_selector.as_ref() {
-                validate_wait_for_command(&cmd, wait)?;
+                cli::validate_wait_for_command(&cmd, wait)?;
             }
             execute_with_adapter(cmd, &context, &cli.visual_debug, deadline)
         }
     }
-}
-
-fn build_wait_selector(cli: &Cli) -> Result<Option<WaitSelector>, AppError> {
-    let query = cli
-        .post_action_wait
-        .wait_for
-        .as_ref()
-        .map(|raw| (raw, false))
-        .or_else(|| {
-            cli.post_action_wait
-                .wait_for_gone
-                .as_ref()
-                .map(|raw| (raw, true))
-        });
-    let Some((query_raw, gone)) = query else {
-        if cli.post_action_wait.wait_timeout.is_some() {
-            return Err(AppError::invalid_input_with_suggestion(
-                "--wait-timeout requires --wait-for or --wait-for-gone",
-                "Add a selector wait flag or remove --wait-timeout",
-            ));
-        }
-        return Ok(None);
-    };
-    Ok(Some(WaitSelector {
-        query_raw: query_raw.clone(),
-        gone,
-        timeout_ms: cli.post_action_wait.wait_timeout.unwrap_or(30_000),
-    }))
-}
-
-fn validate_wait_for_command(cmd: &Commands, wait: &WaitSelector) -> Result<(), AppError> {
-    if !cmd.supports_post_action_wait() {
-        return Err(AppError::invalid_input_with_suggestion(
-            format!(
-                "Command '{}' does not support --wait-for or --wait-for-gone",
-                cmd.name()
-            ),
-            "Use snapshot --wait-for \"<selector>\" or a supported ref action (click, type, …).",
-        ));
-    }
-    agent_desktop_core::commands::query::validate_selector(&wait.query_raw)?;
-    Ok(())
 }
 
 fn execute_with_adapter(
@@ -343,7 +313,7 @@ fn response(cmd_name: &str, result: Result<serde_json::Value, AppError>) -> Resp
 }
 
 fn report_output_failure(write_err: std::io::Error) -> ExitCode {
-    eprintln!("agent-desktop: failed to write response to stdout: {write_err}");
+    eprintln!("mu-agent-desktop: failed to write response to stdout: {write_err}");
     ExitCode::FAILURE
 }
 

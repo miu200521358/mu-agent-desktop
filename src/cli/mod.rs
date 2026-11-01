@@ -1,10 +1,14 @@
 use clap::Subcommand;
 
+mod cloaked_window;
 mod identity;
 mod post_action_wait;
 mod root;
+mod wait_selector;
 
+pub(crate) use cloaked_window::validate_cloaked_window_options;
 pub(crate) use root::Cli;
+pub(crate) use wait_selector::{build_wait_selector, validate_wait_for_command};
 
 use crate::cli_args::{
     FindArgs, GetArgs, IsArgs, ListSurfacesArgs, RefArgs, ScreenshotArgs, SnapshotArgs,
@@ -28,6 +32,7 @@ use crate::cli_args::{
         ResizeWindowCliArgs, WaitArgs,
     },
     trace::TraceArgs,
+    window_diagnostic::WindowDiagnosticArgs,
 };
 
 #[derive(Subcommand, Debug)]
@@ -110,6 +115,8 @@ pub(crate) enum Commands {
     CloseApp(CloseAppArgs),
     #[command(about = "List all visible windows (--app to filter by application)")]
     ListWindows(ListWindowsArgs),
+    #[command(about = "Read native window, cloak, and virtual desktop diagnostics")]
+    WindowDiagnostic(WindowDiagnosticArgs),
     #[command(about = "List connected displays with bounds and scale factor")]
     ListDisplays,
     #[command(about = "List all running GUI applications (--app to filter)")]
@@ -220,6 +227,7 @@ impl Commands {
             Self::Launch(_) => CommandMetadata::new("launch", false),
             Self::CloseApp(_) => CommandMetadata::new("close-app", false),
             Self::ListWindows(_) => CommandMetadata::new("list-windows", false),
+            Self::WindowDiagnostic(_) => CommandMetadata::new("window-diagnostic", false),
             Self::ListDisplays => CommandMetadata::new("list-displays", false),
             Self::ListApps(_) => CommandMetadata::new("list-apps", false),
             Self::FocusWindow(_) => CommandMetadata::new("focus-window", false),
@@ -324,6 +332,7 @@ impl Commands {
             | Self::Get(_)
             | Self::Is(_)
             | Self::ListWindows(_)
+            | Self::WindowDiagnostic(_)
             | Self::ListDisplays
             | Self::ListApps(_)
             | Self::ListSurfaces(_)

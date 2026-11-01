@@ -72,10 +72,12 @@ pub(super) fn list_apps(
 pub(super) fn list_surfaces(
     args: ListSurfacesArgs,
     adapter: &dyn PlatformAdapter,
+    context: &agent_desktop_core::context::CommandContext,
 ) -> Result<Value, AppError> {
-    list_surfaces_command::execute(
+    list_surfaces_command::execute_with_context(
         list_surfaces_command::ListSurfacesArgs { app: args.app },
         adapter,
+        context,
     )
 }
 

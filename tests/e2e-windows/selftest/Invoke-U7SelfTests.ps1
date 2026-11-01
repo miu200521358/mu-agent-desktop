@@ -4,7 +4,7 @@
     Invoke-U7SelfTests.ps1 - standalone verification for Lib.psm1: target
     objects, Assert-Effect / Assert-NoEffect / Assert-Envelope, lock
     ordering, and the verdict/skip ledger. Runs against
-    Stub-AgentDesktop.ps1, never against a real agent-desktop.exe or a real
+    Stub-AgentDesktop.ps1, never against a real mu-agent-desktop.exe or a real
     fixture, so it needs no desktop and no staged binary - exactly what
     U8's -SelfTest half requires of this tier. Every assertion below calls
     the real shipped primitive; where the plan names an invert-verification

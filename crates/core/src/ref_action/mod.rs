@@ -18,6 +18,7 @@ pub(crate) mod ref_action_wait;
 pub(crate) mod ref_action_wait_context;
 pub(crate) mod ref_action_wait_evidence;
 pub(crate) mod ref_action_wait_support;
+pub(crate) mod window_scope;
 
 const TRACE_CAPTURE_BUDGET_MS: u64 = 1_000;
 const PRE_CAPTURE_DISPATCH_RESERVE_MS: u64 = 100;
@@ -70,9 +71,7 @@ pub(crate) fn dispatch_resolved(
         .filter(|instance| !instance.is_empty())
         .ok_or_else(|| AdapterError::stale_ref_because("target process instance is unavailable"))?;
     let expected_process = crate::ProcessIdentity::new(target.entry.process.pid, process_instance);
-    let mut handle = target
-        .adapter
-        .resolve_element_strict(target.entry, target.deadline)
+    let mut handle = window_scope::resolve_context(&target)
         .map_err(mark_pre_dispatch_resolution_failure)
         .inspect_err(|error| {
             crate::ref_action::ref_action_wait_support::trace_resolve_error(
@@ -110,10 +109,7 @@ pub(crate) fn dispatch_resolved(
             };
             handle = match recovered {
                 Some(handle) => handle,
-                None => target
-                    .adapter
-                    .resolve_element_strict(target.entry, target.deadline)
-                    .map_err(after_scroll)?,
+                None => window_scope::resolve_context(&target).map_err(after_scroll)?,
             };
             let scrolled_target = ResolvedRefAction::new(target, &handle);
             stable_preflight(&scrolled_target, &request)

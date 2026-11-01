@@ -4,7 +4,7 @@
     DesktopLease.psm1 - the top half of tests/e2e/interaction_lock.py: the
     desktop-exclusivity lease this platform has never had, and the two
     lease-adoption spawn entry points every later scenario unit calls
-    through rather than invoking agent-desktop.exe directly. Split out of
+        through rather than invoking mu-agent-desktop.exe directly. Split out of
     Harness.psm1 purely to keep both modules under the 400-line cap.
 #>
 
@@ -24,7 +24,7 @@ function Get-CanonicalDesktopLockPath {
         Resolves the canonical lock path the same way
         crates/windows/src/system/interaction_lease's canonical_lock_path()
         does: GetSystemWindowsDirectoryW's drive, then
-        ProgramData\agent-desktop\<token user SID>\interaction.lock, with
+        ProgramData\mu-agent-desktop\<token user SID>\interaction.lock, with
         the SID read through GetTokenInformation(TokenUser) - never from
         %LOCALAPPDATA%, %TEMP%, %TMP% or %HOME%, all of which this harness's
         own isolated environment has already redirected.
@@ -223,7 +223,7 @@ function Invoke-Guarded {
         Spawns a non-product child (the fixture, a helper) with no lease
         inheritance - the default-deny opt-in KTD4 requires. Every
         environment variable this call passes strips
-        AGENT_DESKTOP_INTERACTION_LEASE_HANDLE even when this process
+        MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE even when this process
         happens to have one set, so a fixture launched through this entry
         point cannot hold the desktop lock after the harness releases it.
     #>
@@ -244,9 +244,9 @@ function Invoke-Guarded {
 function Invoke-GuardedAgent {
     <#
     .SYNOPSIS
-        Spawns a staged agent-desktop.exe invocation with the desktop lease
+        Spawns a staged mu-agent-desktop.exe invocation with the desktop lease
         made inheritable for exactly this one spawn: HANDLE_FLAG_INHERIT is
-        set immediately before Start(), AGENT_DESKTOP_INTERACTION_LEASE_HANDLE
+        set immediately before Start(), MU_AGENT_DESKTOP_INTERACTION_LEASE_HANDLE
         is passed with the held handle's value, and the flag is cleared
         again once the spawn returns - never left inheritable for the
         run's duration (KTD4). Every invocation of the staged binary in

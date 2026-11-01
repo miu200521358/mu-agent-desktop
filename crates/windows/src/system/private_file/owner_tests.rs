@@ -246,7 +246,7 @@ fn a_profile_artifact_keeps_system_admins_and_user_and_never_users_across_create
     let local_app_data =
         std::env::var_os("LOCALAPPDATA").expect("LOCALAPPDATA must exist on Windows");
     let fresh = Scratch::adopt(Path::new(&local_app_data).join("Temp").join(format!(
-        ".agent-desktop-acl-pin-{}-{:016x}",
+        ".mu-agent-desktop-acl-pin-{}-{:016x}",
         std::process::id(),
         scratch_nonce()
     )));

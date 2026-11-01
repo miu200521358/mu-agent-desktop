@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use super::runtime_store::{named_stem, runtime_subdir, write_private_atomically};
 
-const NAMES_DIR: &str = "agent-desktop-app-names";
+const NAMES_DIR: &str = "mu-agent-desktop-app-names";
 
 /// The name each application's accessibility root answered to, kept per bus
 /// name and process instance in a private directory of the runtime dir. A

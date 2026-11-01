@@ -1,6 +1,7 @@
 use crate::{
     AdapterError, AppError, Deadline, ErrorCode,
     adapter::{PlatformAdapter, ScreenshotTarget, WindowFilter},
+    context::CommandContext,
     system::process_state::ProcessState,
 };
 use base64::Engine;
@@ -17,9 +18,34 @@ pub struct ScreenshotArgs {
 }
 
 pub fn execute(args: ScreenshotArgs, adapter: &dyn PlatformAdapter) -> Result<Value, AppError> {
+    execute_with_context(args, adapter, &CommandContext::default())
+}
+
+pub fn execute_with_context(
+    args: ScreenshotArgs,
+    adapter: &dyn PlatformAdapter,
+    context: &CommandContext,
+) -> Result<Value, AppError> {
     let deadline = crate::Deadline::standard()?;
-    let target = resolve_target(&args, adapter, deadline)?;
-    let buf = adapter.screenshot(target, deadline)?;
+    let (target, filter) = match context.cloaked_window_target() {
+        Some(target) => (
+            resolve_cloaked_target(&args, adapter, target, deadline)?,
+            WindowFilter {
+                focused_only: false,
+                app: args.app.clone(),
+                cloaked_window: Some(target),
+            },
+        ),
+        None => (
+            resolve_target(&args, adapter, deadline)?,
+            WindowFilter::default(),
+        ),
+    };
+    let buf = if filter.cloaked_window.is_some() {
+        adapter.screenshot_with_filter(target, &filter, deadline)?
+    } else {
+        adapter.screenshot(target, deadline)?
+    };
 
     if let Some(path) = args.output_path {
         crate::refs::write_user_file(&path, &buf.data)
@@ -41,6 +67,66 @@ pub fn execute(args: ScreenshotArgs, adapter: &dyn PlatformAdapter) -> Result<Va
             "scale_factor": buf.scale_factor
         }))
     }
+}
+
+fn resolve_cloaked_target(
+    args: &ScreenshotArgs,
+    adapter: &dyn PlatformAdapter,
+    target: crate::CloakedWindowTarget,
+    deadline: crate::Deadline,
+) -> Result<ScreenshotTarget, AppError> {
+    if args.screen.is_some() {
+        return Err(AppError::invalid_input(
+            "--cloaked-window cannot target a display screenshot",
+        ));
+    }
+    let target_id = target.window_id();
+    if args
+        .window_id
+        .as_deref()
+        .is_some_and(|window_id| window_id != target_id)
+    {
+        return Err(AdapterError::new(
+            ErrorCode::WindowNotFound,
+            "The requested window selector does not match --cloaked-window",
+        )
+        .unsent()
+        .into());
+    }
+    let filter = WindowFilter {
+        focused_only: false,
+        app: args.app.clone(),
+        cloaked_window: Some(target),
+    };
+    let candidates = adapter
+        .list_windows_with_filter(&filter, deadline)?
+        .into_iter()
+        .filter(|window| {
+            window.id == target_id
+                && window.pid == target.pid
+                && args
+                    .app
+                    .as_deref()
+                    .is_none_or(|app| crate::app_name_matches(&window.app, app))
+        })
+        .collect();
+    let window = crate::system::window_lookup::select_window(
+        candidates,
+        AdapterError::new(
+            ErrorCode::WindowNotFound,
+            "The permitted window is no longer an eligible top-level window",
+        ),
+        "Multiple windows matched the exact permitted window identity",
+    )?;
+    if window.process_instance.as_deref().is_none_or(str::is_empty) {
+        return Err(AdapterError::new(
+            ErrorCode::StaleRef,
+            "The permitted window has no process-instance identity",
+        )
+        .unsent()
+        .into());
+    }
+    Ok(ScreenshotTarget::ExactWindow(window))
 }
 
 fn resolve_target(
@@ -90,9 +176,10 @@ fn resolve_target(
         let filter = WindowFilter {
             focused_only: false,
             app: args.app.clone(),
+            cloaked_window: None,
         };
         let mut candidates = adapter
-            .list_windows(&filter, deadline)?
+            .list_windows_with_filter(&filter, deadline)?
             .into_iter()
             .filter(|window| &window.id == window_id)
             .collect::<Vec<_>>();

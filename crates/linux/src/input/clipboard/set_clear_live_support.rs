@@ -38,7 +38,7 @@ pub(super) fn private_session() -> Session {
     let home = Path::new(&private).join("clipboard-state");
     fs::create_dir_all(&home).expect("a private state root");
     fs::set_permissions(&home, fs::Permissions::from_mode(0o700)).expect("a private mode");
-    unsafe { std::env::set_var("AGENT_DESKTOP_HOME", &home) };
+    unsafe { std::env::set_var("MU_AGENT_DESKTOP_HOME", &home) };
     Session {
         _guard: guard,
         display,

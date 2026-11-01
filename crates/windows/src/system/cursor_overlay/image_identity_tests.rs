@@ -17,10 +17,12 @@ fn under_build_tree(file: &str) -> PathBuf {
 #[test]
 fn the_installed_binary_is_recognised_with_and_without_its_extension() {
     assert!(is_agent_desktop_image(&under_build_tree(
-        "agent-desktop.exe"
+        "mu-agent-desktop.exe"
     )));
-    assert!(is_agent_desktop_image(&under_build_tree("agent-desktop")));
-    assert!(is_agent_desktop_image(Path::new("agent-desktop.exe")));
+    assert!(is_agent_desktop_image(&under_build_tree(
+        "mu-agent-desktop"
+    )));
+    assert!(is_agent_desktop_image(Path::new("mu-agent-desktop.exe")));
 }
 
 /// `QueryFullProcessImageNameW` reports whatever case the file system holds,
@@ -38,6 +40,9 @@ fn the_comparison_ignores_case_in_the_stem_and_the_extension() {
 
 #[test]
 fn another_binary_is_rejected_even_from_our_own_build_tree() {
+    assert!(!is_agent_desktop_image(&under_build_tree(
+        "agent-desktop.exe"
+    )));
     assert!(!is_agent_desktop_image(&under_build_tree("notepad.exe")));
     assert!(!is_agent_desktop_image(&under_build_tree(
         "agent-desktop-ffi.exe"

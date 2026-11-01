@@ -40,9 +40,10 @@ pub(crate) fn forward_batch_item(
         "--timeout-ms".into(),
         deadline.remaining_ms().to_string(),
     ]);
-    let mut cli =
-        crate::Cli::try_parse_from(std::iter::once("agent-desktop".to_owned()).chain(args.clone()))
-            .map_err(|error| AppError::invalid_input(error.to_string()))?;
+    let mut cli = crate::Cli::try_parse_from(
+        std::iter::once("mu-agent-desktop".to_owned()).chain(args.clone()),
+    )
+    .map_err(|error| AppError::invalid_input(error.to_string()))?;
     let command = cli
         .command
         .take()

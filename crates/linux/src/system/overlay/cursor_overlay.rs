@@ -61,7 +61,7 @@ mod tests;
 #[path = "cursor_overlay_cli_tests.rs"]
 mod cli_tests;
 
-const OWNER: &[u8] = b"_AGENT_DESKTOP_CURSOR_OWNER";
+const OWNER: &[u8] = b"_MU_AGENT_DESKTOP_CURSOR_OWNER";
 
 pub(in crate::system) fn is_overlay(
     connection: &x11rb::rust_connection::RustConnection,

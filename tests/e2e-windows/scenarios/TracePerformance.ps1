@@ -72,7 +72,7 @@ function Invoke-TraceSegmentLegs {
             Remove-Item -Path 'Env:\AGENT_DESKTOP_SESSION' -ErrorAction SilentlyContinue
         }
 
-        $traceDir = Join-Path $env:HOME ".agent-desktop\sessions\$sessionId\trace"
+        $traceDir = Join-Path $env:HOME ".mu-agent-desktop\sessions\$sessionId\trace"
         $segments = @()
         if (Test-Path -LiteralPath $traceDir) {
             $segments = @(Get-ChildItem -LiteralPath $traceDir -Filter '*.jsonl' -File -ErrorAction SilentlyContinue)
@@ -137,7 +137,7 @@ function Invoke-ArtifactModeLeg {
         }
         if (-not $usedSnapshotId) { throw 'could not determine the snapshot id the acting ref actually resolved from' }
 
-        $refmapPath = Join-Path $env:HOME ".agent-desktop\sessions\$sessionId\trace\refmaps\$usedSnapshotId.json"
+        $refmapPath = Join-Path $env:HOME ".mu-agent-desktop\sessions\$sessionId\trace\refmaps\$usedSnapshotId.json"
         if (-not (Test-Path -LiteralPath $refmapPath)) { throw "no refmap copy found at $refmapPath - ArtifactsMode::Full did not carry the acting ref's own session" }
         Add-Pass -Leg 'trace-artifact-mode-uses-session-refmap'
     } catch {

@@ -52,7 +52,7 @@ fn batch_without_a_bus_stops_at_permission_preflight_without_dispatching() {
     ]);
     let output = super::binary()
         .args(["batch", &batch.to_string()])
-        .env("AGENT_DESKTOP_HOME", &dir)
+        .env("MU_AGENT_DESKTOP_HOME", &dir)
         .env("XDG_RUNTIME_DIR", &dir)
         .env(
             "DBUS_SESSION_BUS_ADDRESS",

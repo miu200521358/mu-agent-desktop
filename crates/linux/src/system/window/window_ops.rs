@@ -135,6 +135,7 @@ pub(crate) fn focused_window(
     let filter = WindowFilter {
         focused_only: true,
         app: None,
+        cloaked_window: None,
     };
     Ok(list_windows(bus, &filter, deadline)?.into_iter().next())
 }

@@ -299,7 +299,7 @@ fn a_structurally_unverifiable_entry_settles_stale_in_one_attempt() {
     let mut attempts = 0;
     let result = retry_incomplete_until(deadline, || {
         attempts += 1;
-        resolve_attempt(&entry, deadline)
+        resolve_attempt(&entry, &WindowFilter::default(), deadline)
     });
 
     assert_eq!(

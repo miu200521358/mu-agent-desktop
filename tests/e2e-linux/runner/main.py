@@ -16,7 +16,7 @@ sys.path.insert(0, str(HARNESS_ROOT))
 
 TIER_CHOICES = ("x11-openbox", "x11-mutter", "wayland")
 TIER_DEADLINE_S = 90.0
-LEASE_FD_ENV = "AGENT_DESKTOP_INTERACTION_LEASE_FD"
+LEASE_FD_ENV = "MU_AGENT_DESKTOP_INTERACTION_LEASE_FD"
 SUITE_ENV = "AGENT_DESKTOP_E2E_SUITE"
 LOCK_ROOT_ENV = "AGENT_DESKTOP_E2E_LOCK_ROOT"
 
@@ -65,7 +65,7 @@ def _sigterm(_signum, _frame):
 
 
 def _write_lying_binary(suite_dir: Path) -> Path:
-    path = Path(suite_dir) / "bin" / "agent-desktop"
+    path = Path(suite_dir) / "bin" / "mu-agent-desktop"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text('#!/bin/sh\nprintf \'{"ok":true,"data":{"headless":true}}\\n\'\n')
     path.chmod(0o500)
@@ -296,7 +296,7 @@ def main(argv: list[str]) -> int:
         source = Path(
             env.get("AGENT_DESKTOP_E2E_BIN_SRC")
             or env.get("AGENT_DESKTOP_E2E_BIN")
-            or session.HARNESS_ROOT.parent.parent / "target" / "release" / "agent-desktop"
+            or session.HARNESS_ROOT.parent.parent / "target" / "release" / "mu-agent-desktop"
         )
         try:
             binary = stage.stage_binary(source, suite_dir)
@@ -307,8 +307,8 @@ def main(argv: list[str]) -> int:
 
     session_base = Path(
         env.get("AGENT_DESKTOP_SESSION_BASE")
-        or (Path(env["XDG_RUNTIME_DIR"]) / "agent-desktop-sessions"
-            if env.get("XDG_RUNTIME_DIR") else Path(f"/tmp/agent-desktop-sessions-{os.getuid()}"))
+        or (Path(env["XDG_RUNTIME_DIR"]) / "mu-agent-desktop-sessions"
+            if env.get("XDG_RUNTIME_DIR") else Path(f"/tmp/mu-agent-desktop-sessions-{os.getuid()}"))
     )
     session.sweep_strays(session_base)
 

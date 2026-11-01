@@ -1,16 +1,16 @@
 use crate::AppError;
 use std::path::{Path, PathBuf};
 
-const AGENT_DESKTOP_HOME_ENV: &str = "AGENT_DESKTOP_HOME";
-const STATE_DIR_NAME: &str = ".agent-desktop";
+const MU_AGENT_DESKTOP_HOME_ENV: &str = "MU_AGENT_DESKTOP_HOME";
+const STATE_DIR_NAME: &str = ".mu-agent-desktop";
 
-/// Binary-level preflight: validates `AGENT_DESKTOP_HOME` without touching
+/// Binary-level preflight: validates `MU_AGENT_DESKTOP_HOME` without touching
 /// `HOME`/`USERPROFILE`. A no-op when the variable is unset, so legacy
 /// behavior (surfacing a missing-HOME error later, at first state touch)
 /// stays byte-identical to today.
 pub fn validate_state_root_env() -> Result<(), AppError> {
     let override_active = crate::refs::home_override_active();
-    let env_value = std::env::var_os(AGENT_DESKTOP_HOME_ENV).map(PathBuf::from);
+    let env_value = std::env::var_os(MU_AGENT_DESKTOP_HOME_ENV).map(PathBuf::from);
     validate_state_root_env_value(override_active, env_value, is_owned_by_current_user)
 }
 
@@ -30,7 +30,7 @@ fn validate_state_root_env_value(
 
 pub(crate) fn resolve_configured_state_root() -> Result<PathBuf, AppError> {
     let override_active = crate::refs::home_override_active();
-    let env_value = std::env::var_os(AGENT_DESKTOP_HOME_ENV).map(PathBuf::from);
+    let env_value = std::env::var_os(MU_AGENT_DESKTOP_HOME_ENV).map(PathBuf::from);
     let home_fallback = crate::refs::home_dir();
     resolve_state_root(
         override_active,
@@ -61,17 +61,17 @@ fn validate_env_root(
 ) -> Result<(), AppError> {
     if path.as_os_str().is_empty() {
         return Err(AppError::invalid_input_with_suggestion(
-            "AGENT_DESKTOP_HOME must not be empty",
+            "MU_AGENT_DESKTOP_HOME must not be empty",
             "Unset the variable or set it to an absolute directory path.",
         ));
     }
     if !path.is_absolute() {
         return Err(AppError::invalid_input_with_suggestion(
             format!(
-                "AGENT_DESKTOP_HOME must be an absolute path, got '{}'",
+                "MU_AGENT_DESKTOP_HOME must be an absolute path, got '{}'",
                 path.display()
             ),
-            "Set AGENT_DESKTOP_HOME to an absolute directory path.",
+            "Set MU_AGENT_DESKTOP_HOME to an absolute directory path.",
         ));
     }
     match std::fs::symlink_metadata(path) {
@@ -79,28 +79,28 @@ fn validate_env_root(
             if meta.file_type().is_symlink() {
                 return Err(AppError::invalid_input_with_suggestion(
                     format!(
-                        "AGENT_DESKTOP_HOME must not be a symlink: '{}'",
+                        "MU_AGENT_DESKTOP_HOME must not be a symlink: '{}'",
                         path.display()
                     ),
-                    "Point AGENT_DESKTOP_HOME at a real directory, not a symlink.",
+                    "Point MU_AGENT_DESKTOP_HOME at a real directory, not a symlink.",
                 ));
             }
             if !meta.is_dir() {
                 return Err(AppError::invalid_input_with_suggestion(
                     format!(
-                        "AGENT_DESKTOP_HOME must be a directory: '{}'",
+                        "MU_AGENT_DESKTOP_HOME must be a directory: '{}'",
                         path.display()
                     ),
-                    "Remove the file at this path or choose a different AGENT_DESKTOP_HOME.",
+                    "Remove the file at this path or choose a different MU_AGENT_DESKTOP_HOME.",
                 ));
             }
             if !owned_by_current_user(&meta) {
                 return Err(AppError::invalid_input_with_suggestion(
                     format!(
-                        "AGENT_DESKTOP_HOME is owned by a different user: '{}'",
+                        "MU_AGENT_DESKTOP_HOME is owned by a different user: '{}'",
                         path.display()
                     ),
-                    "Choose a directory you own for AGENT_DESKTOP_HOME.",
+                    "Choose a directory you own for MU_AGENT_DESKTOP_HOME.",
                 ));
             }
             Ok(())
@@ -108,7 +108,7 @@ fn validate_env_root(
         Err(err) if err.kind() == std::io::ErrorKind::NotFound => Ok(()),
         Err(err) => Err(AppError::invalid_input_with_suggestion(
             format!(
-                "Cannot access AGENT_DESKTOP_HOME '{}': {err}",
+                "Cannot access MU_AGENT_DESKTOP_HOME '{}': {err}",
                 path.display()
             ),
             "Check permissions on the parent directory or choose a different path.",
@@ -155,7 +155,7 @@ mod tests {
         let home = PathBuf::from("/home/example-user");
         let resolved =
             resolve_state_root(false, None, Some(home.clone()), always_owned).expect("resolves");
-        assert_eq!(resolved, home.join(".agent-desktop"));
+        assert_eq!(resolved, home.join(".mu-agent-desktop"));
     }
 
     #[test]
@@ -266,7 +266,7 @@ mod tests {
             always_owned,
         )
         .expect("resolves via home fallback, ignoring env");
-        assert_eq!(resolved, home.join(".agent-desktop"));
+        assert_eq!(resolved, home.join(".mu-agent-desktop"));
     }
 
     #[test]

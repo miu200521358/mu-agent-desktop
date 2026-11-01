@@ -90,6 +90,7 @@ fn windows_named(rig: &Rig) -> Vec<WindowInfo> {
     let filter = WindowFilter {
         focused_only: false,
         app: None,
+        cloaked_window: None,
     };
     list_windows(&rig.bus, &filter, deadline())
         .unwrap_or_default()

@@ -20,11 +20,11 @@ def main():
     args.out.mkdir(parents=True, exist_ok=True)
     state_directory = tempfile.TemporaryDirectory(prefix="adc-", dir="/tmp")
     state = Path(state_directory.name)
-    env = dict(os.environ, AGENT_DESKTOP_HOME=str(state))
+    env = dict(os.environ, MU_AGENT_DESKTOP_HOME=str(state))
     env.pop("AGENT_DESKTOP_SESSION", None)
     env.pop("AGENT_DESKTOP_AGENT_ID", None)
     action_flags = ["--headed"] if args.headed else []
-    lease_fd = env.get("AGENT_DESKTOP_INTERACTION_LEASE_FD")
+    lease_fd = env.get("MU_AGENT_DESKTOP_INTERACTION_LEASE_FD")
     cli_pass_fds = (int(lease_fd),) if lease_fd is not None else ()
 
     def cli(*command):

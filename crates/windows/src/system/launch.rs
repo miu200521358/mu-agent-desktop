@@ -142,6 +142,7 @@ fn exact_window(
         &WindowFilter {
             focused_only: false,
             app: None,
+            cloaked_window: None,
         },
         deadline,
     )?;

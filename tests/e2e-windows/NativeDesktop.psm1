@@ -4,7 +4,7 @@
     NativeDesktop.psm1 - raw window/cursor/GUI-thread reads via
     NativeTypes.psm1's P/Invoke surface: the oracle R14 requires
     preconditions to be staged and read through, never through
-    agent-desktop.exe itself. Split out of Native.psm1 purely to keep both
+    mu-agent-desktop.exe itself. Split out of Native.psm1 purely to keep both
     modules under the 400-line cap.
 #>
 
